@@ -3,920 +3,2272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Keycloak as Enterprise IAM</title>
+    <title>Keycloak Enterprise IAM Demo | FinSecure Bank</title>
+    <meta name="description" content="A comprehensive technical demonstration of Keycloak as Enterprise Identity and Access Management for banking applications.">
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-
-    <!-- Reveal.js Core CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
-    <!-- Highlight.js Light Theme (Notion-esque) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
-
     <style>
-        /* NOTION THEME CSS - FULL VIEWPORT OPTIMIZED */
         :root {
-            --r-main-font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            --r-heading-font: var(--r-main-font);
-            --r-background-color: #ffffff; 
-            --r-main-color: #37352f;       
-            --r-heading-color: #37352f;
-            --r-link-color: #0a85d1;
-            --r-link-color-hover: #005c99;
-            --r-selection-background-color: rgba(46, 170, 220, 0.3);
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f6f3;
+            --bg-tertiary: #f1f1ef;
+            --bg-code: #f7f6f3;
+            --text-primary: #37352f;
+            --text-secondary: #6b6b6b;
+            --text-muted: #9b9a97;
+            --border-color: #e9e9e7;
+            --accent-blue: #2383e2;
+            --accent-purple: #9065b0;
+            --accent-green: #0f7b6c;
+            --accent-orange: #d9730d;
+            --accent-red: #e03e3e;
+            --accent-yellow: #dfab01;
+            --callout-blue-bg: #e7f3ff;
+            --callout-green-bg: #e6f6f4;
+            --callout-orange-bg: #fff3e0;
+            --callout-red-bg: #ffe7e7;
+            --callout-purple-bg: #f3e8ff;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --radius: 6px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            background: #ffffff;
-            color: #37352f;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 16px;
         }
 
-        /* Typography */
-        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
-            text-transform: none;
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+            padding: 12px 0;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
             font-weight: 700;
-            letter-spacing: -0.01em;
-            color: #37352f;
-            text-shadow: none;
-            width: 100%;
         }
 
-        .reveal h1 { font-size: 2.8em; }
-        .reveal h2 { 
-            font-size: 1.8em; 
-            border-bottom: 2px solid #ededeb; 
-            padding-bottom: 15px; 
-            margin-bottom: 30px; 
-            text-align: left; 
-            width: 100%;
-        }
-        
-        .reveal h3 { font-size: 1.3em; margin-bottom: 15px; }
-
-        /* Force left alignment & width */
-        .reveal p, .reveal li { 
-            text-align: left; 
-            font-size: 0.95em; 
-            line-height: 1.6; 
-            color: #37352f;
-        }
-        
-        .reveal .center-text p, .reveal .center-text h1, .reveal .center-text h3 { 
-            text-align: center; 
+        .nav {
+            display: flex;
+            gap: 8px;
         }
 
-        /* Inline Code */
-        .reveal p code, .reveal li code, .reveal td code {
-            background: rgba(135, 131, 120, 0.15);
-            color: #eb5757;
-            padding: 0.15em 0.4em;
-            border-radius: 4px;
-            font-size: 0.85em;
-            font-family: 'Fira Code', monospace;
+        .nav-link {
+            padding: 6px 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: all 0.15s ease;
         }
 
-        /* Blockquotes */
-        .reveal blockquote {
-            border-left: 4px solid #37352f;
-            background: #f7f6f3; 
-            color: #37352f;
-            padding: 20px 30px;
-            border-radius: 4px;
-            font-style: normal; 
-            width: 100%;
-            margin: 0 0 30px 0;
-            box-shadow: none;
+        .nav-link:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 80px 24px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: var(--callout-blue-bg);
+            color: var(--accent-blue);
+            font-size: 13px;
             font-weight: 500;
-            box-sizing: border-box;
+            border-radius: 20px;
+            margin-bottom: 24px;
         }
 
-        /* Responsive Grids that stretch full width */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            align-items: start;
-            width: 100%;
-        }
-        
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 30px;
-            align-items: start;
-            width: 100%;
+        .hero h1 {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
         }
 
-        /* Tables (Notion Database Style) */
-        .reveal table {
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 640px;
+            margin: 0 auto 32px;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: var(--radius);
+            text-decoration: none;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--text-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1a1a1a;
+        }
+
+        .btn-secondary {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 64px;
+        }
+
+        .section-header {
+            margin-bottom: 32px;
+        }
+
+        .section-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent-blue);
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .section-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Callout */
+        .callout {
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 24px 0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .callout-blue {
+            background: var(--callout-blue-bg);
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .callout-green {
+            background: var(--callout-green-bg);
+            border-left: 3px solid var(--accent-green);
+        }
+
+        .callout-orange {
+            background: var(--callout-orange-bg);
+            border-left: 3px solid var(--accent-orange);
+        }
+
+        .callout-purple {
+            background: var(--callout-purple-bg);
+            border-left: 3px solid var(--accent-purple);
+        }
+
+        .callout strong {
+            color: var(--text-primary);
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            transition: all 0.15s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: #d0d0ce;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .card-icon-blue { background: var(--callout-blue-bg); }
+        .card-icon-green { background: var(--callout-green-bg); }
+        .card-icon-orange { background: var(--callout-orange-bg); }
+        .card-icon-purple { background: var(--callout-purple-bg); }
+
+        .card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Tables */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 24px 0;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+        }
+
+        table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.8em;
-            margin-bottom: 25px;
+            font-size: 14px;
         }
-        .reveal table th {
-            color: #787774;
-            font-weight: 500;
-            padding: 12px 15px;
-            border-bottom: 2px solid #ededeb;
+
+        th, td {
+            padding: 12px 16px;
             text-align: left;
-            background: #fbfbfc;
-        }
-        .reveal table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ededeb;
-            vertical-align: top;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        /* Code Blocks */
-        .reveal pre {
-            width: 100%;
-            margin: 0 0 20px 0;
-            box-shadow: none;
-            border-radius: 6px;
-            border: 1px solid #ededeb;
-            background: #f7f6f3;
-            text-align: left !important; 
-        }
-        .reveal pre code {
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85em;
-            padding: 25px;
-            line-height: 1.4;
-            text-align: left !important; 
-            background: transparent;
-            color: #37352f;
+        th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
         }
 
-        /* Scrollable container for massive screens */
-        .scroll-container {
-            max-height: 75vh;
-            overflow-y: auto;
-            padding-right: 20px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .scroll-container::-webkit-scrollbar { width: 8px; }
-        .scroll-container::-webkit-scrollbar-thumb { background: #d3d1cb; border-radius: 4px; }
-
-        /* Feature Cards */
-        .feature-card {
-            background: #ffffff;
-            border: 1px solid #ededeb;
-            border-radius: 8px;
-            padding: 25px;
-            height: 100%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-            box-sizing: border-box;
-        }
-        .feature-card h3 { 
-            font-size: 1.2em; 
-            margin-top: 0; 
+        tr:last-child td {
             border-bottom: none;
-            padding-bottom: 0;
         }
-        
-        /* Badges */
-        .badge { 
-            background: #f1f1ef; 
-            color: #37352f; 
-            padding: 4px 10px; 
-            border-radius: 6px; 
-            font-size: 0.75em; 
-            font-weight: 600; 
-            border: 1px solid #ededeb;
-            display: inline-block;
+
+        tr:hover td {
+            background: var(--bg-secondary);
         }
-        .badge.blue { background: #e8f3fb; color: #0a85d1; border-color: #d1e8f7;}
-        .badge.green { background: #edf3ec; color: #448361; border-color: #d3e4d1;}
-        .badge.gold { background: #fbf3db; color: #d9730d; border-color: #f3e4b8;}
-        
-        .muted-text { color: #787774; }
-        .callout {
-            background: #f7f6f3;
+
+        /* Code */
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            background: var(--bg-code);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-red);
+        }
+
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            background: #1e1e1e;
+            color: #d4d4d4;
             padding: 20px;
-            border-radius: 6px;
-            border-left: 4px solid #0a85d1;
-            margin-top: 20px;
+            border-radius: var(--radius);
+            overflow-x: auto;
+            margin: 24px 0;
+            line-height: 1.5;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        .code-block-title {
+            background: #2d2d2d;
+            color: #9b9b9b;
+            padding: 8px 20px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            border-radius: var(--radius) var(--radius) 0 0;
+            margin-bottom: -24px;
+        }
+
+        .code-block-title + pre {
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        /* Architecture Diagram */
+        .architecture {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin: 24px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        /* Feature List */
+        .feature-list {
+            list-style: none;
+            margin: 24px 0;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-check {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            background: var(--callout-green-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-green);
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .feature-content h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .feature-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Tabs */
+        .tabs {
+            margin: 24px 0;
+        }
+
+        .tab-list {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.15s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--text-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 4px;
+        }
+
+        .badge-blue { background: var(--callout-blue-bg); color: var(--accent-blue); }
+        .badge-green { background: var(--callout-green-bg); color: var(--accent-green); }
+        .badge-orange { background: var(--callout-orange-bg); color: var(--accent-orange); }
+        .badge-purple { background: var(--callout-purple-bg); color: var(--accent-purple); }
+        .badge-red { background: var(--callout-red-bg); color: var(--accent-red); }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 48px 0;
+        }
+
+        /* Toggle Section */
+        .toggle-section {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            margin: 16px 0;
+        }
+
+        .toggle-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            cursor: pointer;
+            user-select: none;
+            background: var(--bg-primary);
+            border-radius: var(--radius);
+            transition: background 0.15s ease;
+        }
+
+        .toggle-header:hover {
+            background: var(--bg-secondary);
+        }
+
+        .toggle-header h3 {
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+
+        .toggle-section.open .toggle-icon {
+            transform: rotate(90deg);
+        }
+
+        .toggle-content {
+            display: none;
+            padding: 0 20px 20px;
+        }
+
+        .toggle-section.open .toggle-content {
+            display: block;
+        }
+
+        /* TOC */
+        .toc {
+            position: fixed;
+            right: 24px;
+            top: 100px;
+            width: 220px;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+            padding: 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 13px;
+        }
+
+        .toc-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .toc a {
+            display: block;
+            padding: 6px 0;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        .toc a:hover {
+            color: var(--text-primary);
+        }
+
+        .toc a.active {
+            color: var(--accent-blue);
+        }
+
+        @media (max-width: 1300px) {
+            .toc {
+                display: none;
+            }
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border-color);
+            padding: 40px 24px;
+            text-align: center;
+            background: var(--bg-secondary);
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        .footer-links a {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Comparison Grid */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin: 24px 0;
+        }
+
+        @media (max-width: 640px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+        }
+
+        .comparison-card li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comparison-card li:last-child {
+            border-bottom: none;
+        }
+
+        /* Step Flow */
+        .step-flow {
+            margin: 24px 0;
+        }
+
+        .step {
+            display: flex;
+            gap: 16px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .step:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            background: var(--text-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .step-content h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .step-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stat Cards */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* JSON Display */
+        .json-block {
+            background: #1e1e1e;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+
+        .json-block code {
+            color: #d4d4d4;
+            font-size: 13px;
+            background: none;
+            padding: 0;
+        }
+
+        .json-key { color: #9cdcfe; }
+        .json-string { color: #ce9178; }
+        .json-number { color: #b5cea8; }
+        .json-boolean { color: #569cd6; }
+
+        /* Highlight */
+        mark {
+            background: #fff3b0;
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 48px 20px;
+            }
+
+            .main {
+                padding: 40px 20px;
+            }
+
+            .section {
+                margin-bottom: 48px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            .header-inner {
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <a href="#" class="logo">
+                <div class="logo-icon">K</div>
+                <span>Keycloak IAM Demo</span>
+            </a>
+            <nav class="nav">
+                <a href="#overview" class="nav-link">Overview</a>
+                <a href="#architecture" class="nav-link">Architecture</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#spis" class="nav-link">Custom SPIs</a>
+                <a href="#demo" class="nav-link">Live Demo</a>
+                <a href="#quickstart" class="nav-link">Quick Start</a>
+            </nav>
+        </div>
+    </header>
 
-<div class="reveal">
-    <div class="slides">
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Enterprise IAM Solution
+        </div>
+        <h1>FinSecure Bank Keycloak Demo</h1>
+        <p class="hero-subtitle">A production-ready demonstration of Keycloak 26 as enterprise Identity and Access Management, featuring custom SPIs, multi-factor authentication, SSO, and role-based access control.</p>
+        <div class="hero-buttons">
+            <a href="#quickstart" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Quick Start
+            </a>
+            <a href="#features" class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                View Documentation
+            </a>
+        </div>
+    </section>
 
-        <!-- Title Slide -->
-        <section class="center-text">
-            <h1>FinSecure Bank</h1>
-            <h2 style="text-align: center; border: none; font-size: 1.8em; margin-bottom: 10px;">Keycloak IAM Demo</h2>
-            <h3 class="muted-text" style="font-weight: 400;">Convincing Your Teams to Adopt Keycloak as Enterprise IAM</h3>
-            <br><br>
-            <p class="muted-text" style="font-size: 0.85em;">Use arrow keys to navigate</p>
+    <!-- Table of Contents (Fixed) -->
+    <aside class="toc">
+        <div class="toc-title">On this page</div>
+        <a href="#overview">Overview</a>
+        <a href="#problem">The Problem</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#features">Core Features</a>
+        <a href="#spis">Custom SPIs</a>
+        <a href="#users">Demo Users</a>
+        <a href="#demo">Live Demo</a>
+        <a href="#security">Security</a>
+        <a href="#quickstart">Quick Start</a>
+        <a href="#comparison">Keycloak vs DIY</a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Overview Section -->
+        <section id="overview" class="section">
+            <div class="section-header">
+                <div class="section-label">Overview</div>
+                <h2 class="section-title">What We Built</h2>
+                <p class="section-desc">FinSecure Bank Agent Network &mdash; A production-ready Keycloak 26 demonstration showcasing enterprise IAM capabilities for banking applications.</p>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">Custom SPIs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">Web Portals</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">13</div>
+                    <div class="stat-label">Demo Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">9</div>
+                    <div class="stat-label">Roles</div>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Layer</th>
+                            <th>Implementation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Identity Provider</strong></td>
+                            <td>Keycloak 26 + PostgreSQL 16</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Auth Protocols</strong></td>
+                            <td>OAuth 2.0, OpenID Connect, PKCE</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Custom SPIs</strong></td>
+                            <td>7 Java extensions (auth, mappers, APIs, events)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Web Applications</strong></td>
+                            <td>4 interactive portals</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Infrastructure</strong></td>
+                            <td>Docker Compose, one-command setup</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout callout-blue">
+                <strong>Use Case:</strong> Field agents acquire bank customers, earn tier-based commissions (1%&ndash;5%), and progress through STANDARD &rarr; SILVER &rarr; GOLD &rarr; PLATINUM tiers &mdash; all identity-driven.
+            </div>
         </section>
 
-        <!-- Slide 1 -->
-        <section>
-            <h2>The Problem We're Solving</h2>
-            <blockquote>"Every team builds auth differently. Every app has its own users, sessions, and security gaps."</blockquote>
-            <div class="grid-2">
-                <div>
-                    <h3 style="color: #eb5757;">Pain Points Without Central IAM</h3>
-                    <ul>
-                        <li>Duplicate login systems across 10+ internal apps</li>
-                        <li>No Single Sign-On — users log in repeatedly</li>
-                        <li>MFA bolted on per-app, inconsistently</li>
-                        <li>No audit trail for who accessed what, when</li>
-                        <li>Custom auth code = custom vulnerabilities</li>
-                        <li>Zero visibility into fraud or suspicious logins</li>
+        <!-- Problem Section -->
+        <section id="problem" class="section">
+            <div class="section-header">
+                <div class="section-label">The Challenge</div>
+                <h2 class="section-title">Why Centralized IAM Matters</h2>
+                <p class="section-desc">"Every team builds auth differently. Every app has its own users, sessions, and security gaps."</p>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon card-icon-orange">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d9730d" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
+                    <h3>Duplicate Login Systems</h3>
+                    <p>10+ internal apps each with their own authentication implementation</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon card-icon-orange">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d9730d" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <h3>No Single Sign-On</h3>
+                    <p>Users log in repeatedly across different applications</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon card-icon-orange">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d9730d" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <h3>Inconsistent MFA</h3>
+                    <p>MFA bolted on per-app with varying security levels</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon card-icon-orange">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d9730d" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
+                    <h3>No Audit Trail</h3>
+                    <p>Zero visibility into who accessed what and when</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon card-icon-orange">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d9730d" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
+                    <h3>Custom Vulnerabilities</h3>
+                    <p>Custom auth code means custom security gaps</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon card-icon-orange">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d9730d" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <h3>Fraud Detection Gaps</h3>
+                    <p>No centralized monitoring for suspicious login patterns</p>
+                </div>
+            </div>
+
+            <div class="callout callout-green">
+                <strong>The Solution:</strong> Keycloak &mdash; Open Source, Enterprise-Grade IAM. Used by Red Hat, Bosch, Airbus, and thousands of enterprises. CNCF-listed project with active maintenance.
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Architecture Section -->
+        <section id="architecture" class="section">
+            <div class="section-header">
+                <div class="section-label">System Design</div>
+                <h2 class="section-title">Architecture Overview</h2>
+            </div>
+
+            <div class="architecture">&#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+&#x2502;  Browser (SSO Session Cookies)                           &#x2502;
+&#x2502;                                                          &#x2502;
+&#x2502;  Agent Portal   Customer Portal   SSO Demo   Branch Mgmt &#x2502;
+&#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+                         &#x2502;  OAuth 2.0 / OIDC
+              &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+              &#x2502;    Keycloak 26      &#x2502;
+              &#x2502;    FinTechRealm     &#x2502;
+              &#x2502;                     &#x2502;
+              &#x2502;  &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;  &#x2502;
+              &#x2502;  &#x2502;  Custom SPIs  &#x2502;  &#x2502;
+              &#x2502;  &#x2502;  (7 modules)  &#x2502;  &#x2502;
+              &#x2502;  &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;  &#x2502;
+              &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+                         &#x2502;
+              &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+              &#x2502;   PostgreSQL 16     &#x2502;
+              &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</div>
+
+            <h3 style="margin-top: 32px; margin-bottom: 16px; font-size: 17px;">Registered Clients</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Client ID</th>
+                            <th>Type</th>
+                            <th>Flows</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>agent-portal</code></td>
+                            <td><span class="badge badge-blue">Public</span></td>
+                            <td>Direct Grant + Browser Flow</td>
+                            <td>Agent web application</td>
+                        </tr>
+                        <tr>
+                            <td><code>customer-mobile-app</code></td>
+                            <td><span class="badge badge-blue">Public</span></td>
+                            <td>Browser Flow + SSO</td>
+                            <td>Customer portal</td>
+                        </tr>
+                        <tr>
+                            <td><code>atm-legacy-system</code></td>
+                            <td><span class="badge badge-purple">Confidential</span></td>
+                            <td>Direct Grant only</td>
+                            <td>ATM terminals, POS</td>
+                        </tr>
+                        <tr>
+                            <td><code>branch-management</code></td>
+                            <td><span class="badge badge-purple">Confidential</span></td>
+                            <td>Service Account</td>
+                            <td>Backend services</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Features Section -->
+        <section id="features" class="section">
+            <div class="section-header">
+                <div class="section-label">Capabilities</div>
+                <h2 class="section-title">Core Features</h2>
+                <p class="section-desc">Comprehensive IAM features implemented in this demonstration.</p>
+            </div>
+
+            <!-- Feature 1: Authentication Flows -->
+            <div class="toggle-section open">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-blue">01</span>
+                        Two Authentication Flows
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <div class="comparison-grid">
+                        <div class="comparison-card">
+                            <h4>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                                Direct Grant Flow
+                            </h4>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">For legacy systems, ATMs, server-to-server</p>
+                            <ul>
+                                <li>Single HTTP call, no browser</li>
+                                <li>Custom PIN authenticator</li>
+                                <li>No SSO session created</li>
+                                <li>API-only token response</li>
+                            </ul>
+                        </div>
+                        <div class="comparison-card">
+                            <h4>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                                Browser Flow
+                            </h4>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">For web apps with full SSO support</p>
+                            <ul>
+                                <li>Full PKCE protection (SHA-256)</li>
+                                <li>SSO session cookies set</li>
+                                <li>MFA integrates seamlessly</li>
+                                <li>Credentials never exposed</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="code-block-title">Direct Grant Request</div>
+                    <pre><code>POST /realms/FinTechRealm/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+username=agent.platinum
+password=agent123
+banking_pin=2468
+grant_type=password
+client_id=agent-portal</code></pre>
+                </div>
+            </div>
+
+            <!-- Feature 2: Custom PIN Authenticator -->
+            <div class="toggle-section">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-green">02</span>
+                        Custom PIN Authenticator (SPI)
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <p style="margin-bottom: 16px;">A custom <code>Authenticator</code> SPI that validates 4-digit banking PINs in the authentication flow.</p>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="feature-check">&#10003;</span>
+                            <div class="feature-content">
+                                <h4>PIN Validation</h4>
+                                <p>Reads <code>banking_pin</code> from HTTP form parameters and validates against user attributes</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-check">&#10003;</span>
+                            <div class="feature-content">
+                                <h4>Session Notes</h4>
+                                <p>Sets <code>pin_validated</code> and <code>validation_timestamp</code> on success</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-check">&#10003;</span>
+                            <div class="feature-content">
+                                <h4>Structured Errors</h4>
+                                <p>Returns JSON error responses on validation failure</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="callout callout-purple">
+                        <strong>Why it matters:</strong> Legacy banking systems (ATMs, POS) can integrate with modern IAM without replacing their auth model.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 3: Custom Token Claims -->
+            <div class="toggle-section">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-orange">03</span>
+                        Custom Token Claims (Protocol Mappers)
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <p style="margin-bottom: 16px;">Three custom OIDC Protocol Mappers inject business context directly into JWT tokens.</p>
+                    
+                    <h4 style="margin: 20px 0 12px; font-size: 15px;">AgentTierMapper</h4>
+                    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">Reads <code>customers_acquired</code> attribute, calculates tier, and injects into token:</p>
+                    <div class="json-block">
+                        <code>{
+  <span class="json-key">"agent_tier"</span>: <span class="json-string">"PLATINUM"</span>,
+  <span class="json-key">"customers_acquired"</span>: <span class="json-number">250</span>,
+  <span class="json-key">"agent_incentives"</span>: {
+    <span class="json-key">"commission_rate_pct"</span>: <span class="json-number">5.0</span>,
+    <span class="json-key">"monthly_bonus_usd"</span>: <span class="json-number">2000</span>,
+    <span class="json-key">"next_tier"</span>: <span class="json-string">"MAX_TIER"</span>,
+    <span class="json-key">"benefits"</span>: [<span class="json-string">"5% commission"</span>, <span class="json-string">"$2000/mo bonus"</span>, <span class="json-string">"Priority leads"</span>]
+  }
+}</code>
+                    </div>
+
+                    <h4 style="margin: 24px 0 12px; font-size: 15px;">AccountTierMapper</h4>
+                    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">Reads <code>account_balance</code> and calculates tier with configurable thresholds:</p>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tier</th>
+                                    <th>Balance Threshold</th>
+                                    <th>Benefits</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge badge-purple">PLATINUM</span></td>
+                                    <td>$100,000+</td>
+                                    <td>Priority support, Zero fees, Dedicated manager</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge badge-orange">GOLD</span></td>
+                                    <td>$50,000+</td>
+                                    <td>Premium support, Reduced fees</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge badge-blue">SILVER</span></td>
+                                    <td>$10,000+</td>
+                                    <td>Extended support hours</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge badge-green">STANDARD</span></td>
+                                    <td>&lt; $10,000</td>
+                                    <td>Basic support</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4 style="margin: 24px 0 12px; font-size: 15px;">TransactionRiskScoreMapper</h4>
+                    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">Multi-factor risk scoring injected into every token:</p>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Factor</th>
+                                    <th>Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Account age &lt; 30 days</td><td>+20</td></tr>
+                                <tr><td>Failed login attempts</td><td>+5 per attempt (max 25)</td></tr>
+                                <tr><td>KYC not verified</td><td>+30</td></tr>
+                                <tr><td>Login from new IP</td><td>+15</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 4: Custom REST APIs -->
+            <div class="toggle-section">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-purple">04</span>
+                        Custom REST APIs (Realm Resource SPIs)
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <p style="margin-bottom: 20px;">Custom REST endpoints registered directly inside Keycloak&apos;s realm URL space.</p>
+                    
+                    <h4 style="margin-bottom: 12px; font-size: 15px;">Agent Network API</h4>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Endpoint</th>
+                                    <th>Method</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>/agent-network/tier</code></td>
+                                    <td><span class="badge badge-blue">GET</span></td>
+                                    <td>Agent&apos;s current tier + incentives</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/agent-network/incentives</code></td>
+                                    <td><span class="badge badge-blue">GET</span></td>
+                                    <td>Full tier breakdown table</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/agent-network/record-acquisition</code></td>
+                                    <td><span class="badge badge-green">POST</span></td>
+                                    <td>Increment customer count, auto-promote tier</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4 style="margin: 24px 0 12px; font-size: 15px;">Account Info API</h4>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Endpoint</th>
+                                    <th>Method</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>/account-info/me</code></td>
+                                    <td><span class="badge badge-blue">GET</span></td>
+                                    <td>Full account profile + tier + limits</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/account-info/tier</code></td>
+                                    <td><span class="badge badge-blue">GET</span></td>
+                                    <td>Account tier + amount to next tier</td>
+                                </tr>
+                                <tr>
+                                    <td><code>/account-info/risk-score</code></td>
+                                    <td><span class="badge badge-blue">GET</span></td>
+                                    <td>Security score (MFA, KYC, email verified)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="code-block-title">Example API Call</div>
+                    <pre><code>TOKEN=$(curl -s ... | jq -r .access_token)
+
+curl -H "Authorization: Bearer $TOKEN" \
+  http://localhost:8082/realms/FinTechRealm/agent-network/tier</code></pre>
+                </div>
+            </div>
+
+            <!-- Feature 5: Fraud Detection -->
+            <div class="toggle-section">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-red">05</span>
+                        Fraud Detection Event Listener (SPI)
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <p style="margin-bottom: 16px;">Keycloak fires events on every auth action. This SPI intercepts and processes them all.</p>
+                    
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Event</th>
+                                    <th>Action Taken</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><code>LOGIN</code></td><td>Update <code>last_login_at</code>, <code>last_known_ip</code>, reset failed counter</td></tr>
+                                <tr><td><code>LOGIN_ERROR</code></td><td>Increment <code>failed_login_attempts</code>, auto-disable after 5 failures</td></tr>
+                                <tr><td><code>LOGOUT</code></td><td>Record <code>last_logout_at</code></td></tr>
+                                <tr><td><code>UPDATE_PASSWORD</code></td><td>Detect password change from new IP, alert</td></tr>
+                                <tr><td><code>VERIFY_EMAIL</code></td><td>Record <code>email_verified_at</code></td></tr>
+                                <tr><td>Admin Events</td><td>Alert on <code>ROLE</code> and <code>USER</code> resource changes</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4 style="margin: 24px 0 12px; font-size: 15px;">Fraud Patterns Detected</h4>
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3>New IP Login</h3>
+                            <p>Detect login from previously unknown IP address</p>
+                        </div>
+                        <div class="card">
+                            <h3>Rapid Re-login</h3>
+                            <p>&lt; 60 seconds between logins triggers alert</p>
+                        </div>
+                        <div class="card">
+                            <h3>Off-Hours Access</h3>
+                            <p>Login between 2 AM &ndash; 5 AM flagged</p>
+                        </div>
+                        <div class="card">
+                            <h3>Auto Lock</h3>
+                            <p>Multiple failed attempts triggers account lock</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 6: Transaction Limits -->
+            <div class="toggle-section">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-blue">06</span>
+                        Transaction Limit Authorization Policy
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <p style="margin-bottom: 16px;">A custom Keycloak Authorization Policy that enforces transaction limits at the IAM layer.</p>
+                    
+                    <div class="step-flow">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Extract Amount</h4>
+                                <p>Extract <code>transaction_amount</code> from authorization context</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Verify KYC</h4>
+                                <p>Check KYC status = "VERIFIED" &mdash; deny if not</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Calculate Tier</h4>
+                                <p>Determine account tier from <code>account_balance</code></p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Enforce Limit</h4>
+                                <p>Compare amount against tier limit &mdash; grant or deny</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 style="margin: 24px 0 12px; font-size: 15px;">Tier Limits</h4>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tier</th>
+                                    <th>Daily Transaction Limit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><span class="badge badge-purple">PLATINUM</span></td><td>$500,000</td></tr>
+                                <tr><td><span class="badge badge-orange">GOLD</span></td><td>$100,000</td></tr>
+                                <tr><td><span class="badge badge-blue">SILVER</span></td><td>$25,000</td></tr>
+                                <tr><td><span class="badge badge-green">STANDARD</span></td><td>$5,000</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="callout callout-blue">
+                        <strong>Why it matters:</strong> Authorization policy lives in the IAM layer &mdash; not scattered across microservices. One policy, enforced everywhere.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 7: SSO -->
+            <div class="toggle-section">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-green">07</span>
+                        Single Sign-On (SSO)
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <p style="margin-bottom: 16px;">Authenticate once, access everything. SSO session cookies enable seamless cross-application access.</p>
+                    
+                    <div class="step-flow">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Initial Login</h4>
+                                <p>User logs into Agent Portal &rarr; Keycloak sets SSO session cookie in browser</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Second App Access</h4>
+                                <p>User opens Customer Portal &rarr; Browser sends SSO cookie &rarr; Keycloak recognizes session &rarr; Skips login</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Unified Logout</h4>
+                                <p>User logs out from any app &rarr; Keycloak invalidates SSO session &rarr; All apps lose sessions simultaneously</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 style="margin: 24px 0 12px; font-size: 15px;">Session Configuration</h4>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Setting</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>SSO Session Idle</td><td>30 minutes</td></tr>
+                                <tr><td>SSO Session Max</td><td>10 hours</td></tr>
+                                <tr><td>Access Token Lifetime</td><td>5 minutes</td></tr>
+                                <tr><td>Protocol</td><td>Authorization Code + PKCE</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 8: MFA -->
+            <div class="toggle-section">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-orange">08</span>
+                        Multi-Factor Authentication (MFA)
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <p style="margin-bottom: 16px;"><strong>Protocol:</strong> TOTP (RFC 6238) &mdash; 6-digit codes, 30-second window</p>
+                    
+                    <div class="callout callout-green">
+                        <strong>MFA + SSO Behavior:</strong> MFA is validated once per SSO session &mdash; not per application. Login to App 1 with OTP, then App 2 and App 3 auto-authenticate without additional OTP prompts.
+                    </div>
+
+                    <h4 style="margin: 24px 0 12px; font-size: 15px;">Setup Flow</h4>
+                    <ol style="margin-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+                        <li>Login to any portal</li>
+                        <li>Navigate to <code>http://localhost:8082/realms/FinTechRealm/account</code></li>
+                        <li>Security &rarr; Two-factor Authentication &rarr; Scan QR</li>
+                        <li>Compatible with Google Authenticator, Authy, Microsoft Authenticator</li>
+                    </ol>
+
+                    <h4 style="margin: 24px 0 12px; font-size: 15px;">Built-in MFA Options</h4>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="feature-check">&#10003;</span>
+                            <div class="feature-content">
+                                <h4>TOTP</h4>
+                                <p>Time-based OTP (Google Authenticator, Authy) &mdash; RFC 6238</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-check">&#10003;</span>
+                            <div class="feature-content">
+                                <h4>WebAuthn / FIDO2</h4>
+                                <p>Passkeys, hardware security keys</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-check">&#10003;</span>
+                            <div class="feature-content">
+                                <h4>Brute Force Protection</h4>
+                                <p>5 failed attempts &rarr; account temporarily locked</p>
+                            </div>
+                        </li>
                     </ul>
                 </div>
-                <div>
-                    <h3 style="color: #0f7b6c;">The Answer</h3>
-                    <div class="callout" style="border-left-color: #0f7b6c;">
-                        <p style="margin: 0; font-size: 1.1em; font-weight: 600;">Keycloak — Open Source, Enterprise-Grade IAM</p>
-                        <p style="margin-top: 10px;">A unified identity platform that solves all standard authentication concerns out of the box, while remaining fully extensible for custom business logic.</p>
+            </div>
+
+            <!-- Feature 9: Custom Theme -->
+            <div class="toggle-section">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-purple">09</span>
+                        Custom Login Theme
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <p style="margin-bottom: 16px;">Full brand customization for all Keycloak-rendered screens.</p>
+                    
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>File</th>
+                                    <th>Purpose</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><code>theme.properties</code></td><td>Extends Keycloak base, loads custom CSS/JS</td></tr>
+                                <tr><td><code>login.ftl</code></td><td>Custom HTML login template with bank branding</td></tr>
+                                <tr><td><code>finsecure-custom.css</code></td><td>Full brand redesign (gradient, card layout, animations)</td></tr>
+                                <tr><td><code>finsecure-login.js</code></td><td>Password strength indicator, input validation, biometric hook</td></tr>
+                                <tr><td><code>messages_en.properties</code></td><td>Custom UI strings (English)</td></tr>
+                                <tr><td><code>messages_es.properties</code></td><td>Spanish localization</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4 style="margin: 24px 0 12px; font-size: 15px;">Advanced Capabilities</h4>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="feature-check">&#10003;</span>
+                            <div class="feature-content">
+                                <h4>Conditional Branding</h4>
+                                <p>Different login pages per <code>client_id</code> (agent vs customer)</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-check">&#10003;</span>
+                            <div class="feature-content">
+                                <h4>Dark Mode</h4>
+                                <p>Auto-detection via <code>prefers-color-scheme</code></p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-check">&#10003;</span>
+                            <div class="feature-content">
+                                <h4>Corporate SSO Button</h4>
+                                <p><code>kc_idp_hint</code> for SAML federation</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-check">&#10003;</span>
+                            <div class="feature-content">
+                                <h4>Biometric Ready</h4>
+                                <p>WebAuthn authentication hook built-in</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Feature 10: RBAC -->
+            <div class="toggle-section">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-blue">10</span>
+                        Role-Based Access Control (RBAC)
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <p style="margin-bottom: 16px;">9 roles configured in FinTechRealm with enforcement at both token and API layers.</p>
+                    
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Role</th>
+                                    <th>Users</th>
+                                    <th>Access Level</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><code>customer</code></td><td>john.platinum, jane.gold, alice.silver, bob.standard</td><td>Own account data only</td></tr>
+                                <tr><td><code>premium_customer</code></td><td>john.platinum, jane.gold</td><td>Premium features</td></tr>
+                                <tr><td><code>agent</code></td><td>agent.standard &rarr; agent.platinum</td><td>Agent APIs, customer acquisition</td></tr>
+                                <tr><td><code>senior_agent</code></td><td>agent.gold, agent.platinum</td><td>Extended agent features</td></tr>
+                                <tr><td><code>agent_manager</code></td><td>manager.north</td><td>Team management, all agent data</td></tr>
+                                <tr><td><code>branch_manager</code></td><td>branch.manager</td><td>Full branch operations</td></tr>
+                                <tr><td><code>auditor</code></td><td>auditor.compliance</td><td>Read-only audit access</td></tr>
+                                <tr><td><code>support_staff</code></td><td>support.staff</td><td>Customer support tools</td></tr>
+                                <tr><td><code>admin</code></td><td>admin</td><td>Full realm administration</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="callout callout-blue">
+                        <strong>Role enforcement happens at two layers:</strong>
+                        <br>1. Token claims &mdash; roles embedded in JWT
+                        <br>2. API layer &mdash; <code>AgentNetworkResource</code> checks roles before write operations
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Slide 2 -->
-        <section>
-            <h2>What We Built</h2>
-            <p style="font-weight: 600; font-size: 1.1em; margin-bottom: 20px;">FinSecure Bank Agent Network — A Production-Ready Keycloak 26 Demo</p>
-            
-            <table>
-                <thead>
-                    <tr><th>Layer</th><th>What's Implemented</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><strong>Identity Provider</strong></td><td>Keycloak 26 + PostgreSQL 16</td></tr>
-                    <tr><td><strong>Auth Protocols</strong></td><td>OAuth 2.0, OpenID Connect, PKCE</td></tr>
-                    <tr><td><strong>Custom SPIs</strong></td><td>7 Java extensions (auth, mappers, APIs, events)</td></tr>
-                    <tr><td><strong>Web Applications</strong></td><td>4 interactive portals</td></tr>
-                    <tr><td><strong>Demo Users</strong></td><td>13 profiles across all roles</td></tr>
-                    <tr><td><strong>Infrastructure</strong></td><td>Docker Compose, one-command setup</td></tr>
-                </tbody>
-            </table>
+        <div class="divider"></div>
 
-            <div class="callout" style="border-left-color: #d9730d; background: #fbf3db;">
-                <p style="margin: 0;"><strong>Use Case:</strong> Field agents acquire bank customers, earn tier-based commissions (1%–5%), and progress through <span class="badge">STANDARD</span> → <span class="badge">SILVER</span> → <span class="badge gold">GOLD</span> → <span class="badge">PLATINUM</span> tiers — all driven completely by the identity layer.</p>
+        <!-- Custom SPIs Section -->
+        <section id="spis" class="section">
+            <div class="section-header">
+                <div class="section-label">Extensions</div>
+                <h2 class="section-title">Custom SPI Summary</h2>
+                <p class="section-desc">All 7 custom extensions packaged as a single JAR: <code>fintech-keycloak-spi.jar</code></p>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>SPI</th>
+                            <th>Class</th>
+                            <th>Type</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PIN Authenticator</td>
+                            <td><code>FinTechPinAuthenticator</code></td>
+                            <td><span class="badge badge-blue">Authenticator</span></td>
+                            <td>4-digit PIN validation in auth flow</td>
+                        </tr>
+                        <tr>
+                            <td>Agent Tier Mapper</td>
+                            <td><code>AgentTierMapper</code></td>
+                            <td><span class="badge badge-green">ProtocolMapper</span></td>
+                            <td>Inject agent tier + incentives into JWT</td>
+                        </tr>
+                        <tr>
+                            <td>Account Tier Mapper</td>
+                            <td><code>AccountTierMapper</code></td>
+                            <td><span class="badge badge-green">ProtocolMapper</span></td>
+                            <td>Inject account tier + benefits into JWT</td>
+                        </tr>
+                        <tr>
+                            <td>Risk Score Mapper</td>
+                            <td><code>TransactionRiskScoreMapper</code></td>
+                            <td><span class="badge badge-green">ProtocolMapper</span></td>
+                            <td>Inject fraud risk score into JWT</td>
+                        </tr>
+                        <tr>
+                            <td>Agent Network API</td>
+                            <td><code>AgentNetworkResource</code></td>
+                            <td><span class="badge badge-purple">RealmResourceProvider</span></td>
+                            <td>REST API for agent operations</td>
+                        </tr>
+                        <tr>
+                            <td>Account Info API</td>
+                            <td><code>AccountInfoResource</code></td>
+                            <td><span class="badge badge-purple">RealmResourceProvider</span></td>
+                            <td>REST API for account data</td>
+                        </tr>
+                        <tr>
+                            <td>Fraud Event Listener</td>
+                            <td><code>FraudDetectionEventListener</code></td>
+                            <td><span class="badge badge-orange">EventListenerProvider</span></td>
+                            <td>Monitor all auth events, detect fraud</td>
+                        </tr>
+                        <tr>
+                            <td>Transaction Policy</td>
+                            <td><code>TransactionLimitPolicy</code></td>
+                            <td><span class="badge badge-red">PolicyProvider</span></td>
+                            <td>Enforce tier-based transaction limits</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="code-block-title">Build &amp; Deploy</div>
+            <pre><code>mvn clean package
+cp target/fintech-keycloak-spi.jar /opt/keycloak/providers/
+/opt/keycloak/bin/kc.sh build && /opt/keycloak/bin/kc.sh start</code></pre>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Demo Users Section -->
+        <section id="users" class="section">
+            <div class="section-header">
+                <div class="section-label">Test Data</div>
+                <h2 class="section-title">Demo Users Reference</h2>
+                <p class="section-desc">Pre-configured users for testing all scenarios.</p>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Password</th>
+                            <th>PIN</th>
+                            <th>Role</th>
+                            <th>Tier</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>john.platinum</code></td>
+                            <td>password123</td>
+                            <td>1234</td>
+                            <td><span class="badge badge-purple">premium_customer</span></td>
+                            <td>Account: PLATINUM ($250k)</td>
+                        </tr>
+                        <tr>
+                            <td><code>jane.gold</code></td>
+                            <td>password123</td>
+                            <td>5678</td>
+                            <td><span class="badge badge-purple">premium_customer</span></td>
+                            <td>Account: GOLD ($75k)</td>
+                        </tr>
+                        <tr>
+                            <td><code>alice.silver</code></td>
+                            <td>password123</td>
+                            <td>9012</td>
+                            <td><span class="badge badge-blue">customer</span></td>
+                            <td>Account: SILVER ($25k)</td>
+                        </tr>
+                        <tr>
+                            <td><code>bob.standard</code></td>
+                            <td>password123</td>
+                            <td>3456</td>
+                            <td><span class="badge badge-blue">customer</span></td>
+                            <td>Account: STANDARD ($5k)</td>
+                        </tr>
+                        <tr>
+                            <td><code>agent.platinum</code></td>
+                            <td>agent123</td>
+                            <td>2468</td>
+                            <td><span class="badge badge-green">senior_agent</span></td>
+                            <td>Agent: PLATINUM (250 customers)</td>
+                        </tr>
+                        <tr>
+                            <td><code>agent.gold</code></td>
+                            <td>agent123</td>
+                            <td>1357</td>
+                            <td><span class="badge badge-green">senior_agent</span></td>
+                            <td>Agent: GOLD (85 customers)</td>
+                        </tr>
+                        <tr>
+                            <td><code>agent.silver</code></td>
+                            <td>agent123</td>
+                            <td>7531</td>
+                            <td><span class="badge badge-blue">agent</span></td>
+                            <td>Agent: SILVER (28 customers)</td>
+                        </tr>
+                        <tr>
+                            <td><code>agent.standard</code></td>
+                            <td>agent123</td>
+                            <td>8642</td>
+                            <td><span class="badge badge-blue">agent</span></td>
+                            <td>Agent: STANDARD (5 customers)</td>
+                        </tr>
+                        <tr>
+                            <td><code>manager.north</code></td>
+                            <td>manager123</td>
+                            <td>5555</td>
+                            <td><span class="badge badge-orange">agent_manager</span></td>
+                            <td>&mdash;</td>
+                        </tr>
+                        <tr>
+                            <td><code>branch.manager</code></td>
+                            <td>branch123</td>
+                            <td>6666</td>
+                            <td><span class="badge badge-orange">branch_manager</span></td>
+                            <td>&mdash;</td>
+                        </tr>
+                        <tr>
+                            <td><code>auditor.compliance</code></td>
+                            <td>auditor123</td>
+                            <td>7777</td>
+                            <td><span class="badge badge-blue">auditor</span></td>
+                            <td>&mdash;</td>
+                        </tr>
+                        <tr>
+                            <td><code>support.staff</code></td>
+                            <td>support123</td>
+                            <td>8888</td>
+                            <td><span class="badge badge-blue">support_staff</span></td>
+                            <td>&mdash;</td>
+                        </tr>
+                        <tr>
+                            <td><code>unverified.user</code></td>
+                            <td>unverified123</td>
+                            <td>&mdash;</td>
+                            <td><span class="badge badge-blue">customer</span></td>
+                            <td>KYC: UNVERIFIED</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 
-        <!-- Slide 3 -->
-        <section>
-            <h2>Architecture Overview</h2>
-            <div class="scroll-container">
-<pre><code class="language-plaintext">┌──────────────────────────────────────────────────────────┐
-│  Browser (SSO Session Cookies)                           │
-│                                                          │
-│  Agent Portal   Customer Portal   SSO Demo   Branch Mgmt │
-└────────────────────────┬─────────────────────────────────┘
-                         │  OAuth 2.0 / OIDC
-              ┌──────────▼──────────┐
-              │    Keycloak 26      │
-              │    FinTechRealm     │
-              │                     │
-              │  ┌───────────────┐  │
-              │  │  Custom SPIs  │  │
-              │  │  (7 modules)  │  │
-              │  └───────────────┘  │
-              └──────────┬──────────┘
-                         │
-              ┌──────────▼──────────┐
-              │   PostgreSQL 16     │
-              └─────────────────────┘</code></pre>
-            
-                <h3 style="margin-top: 30px;">Clients Registered:</h3>
-                <ul style="font-size: 0.9em;">
-                    <li><code>agent-portal</code> — Public, Direct Grant + Browser Flow</li>
-                    <li><code>customer-mobile-app</code> — Public, Browser Flow + SSO</li>
-                    <li><code>atm-legacy-system</code> — Confidential, Direct Grant only</li>
-                    <li><code>branch-management</code> — Confidential, Service Account</li>
+        <div class="divider"></div>
+
+        <!-- Live Demo Section -->
+        <section id="demo" class="section">
+            <div class="section-header">
+                <div class="section-label">Demonstration</div>
+                <h2 class="section-title">Live Demo Scenarios</h2>
+                <p class="section-desc">Step-by-step scenarios to demonstrate key IAM capabilities.</p>
+            </div>
+
+            <div class="toggle-section open">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-blue">A</span>
+                        PIN Authentication
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <ol style="margin-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 2;">
+                        <li>Open Agent Portal &rarr; Direct Grant tab</li>
+                        <li>Enter: <code>agent.platinum</code> / <code>agent123</code> / PIN: <code>2468</code></li>
+                        <li>Click Authenticate</li>
+                        <li>Show decoded JWT &rarr; <code>agent_tier: PLATINUM</code>, <code>commission: 5%</code></li>
+                        <li>Enter wrong PIN &rarr; show rejection</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="toggle-section">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-green">B</span>
+                        SSO in Action
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <ol style="margin-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 2;">
+                        <li>Open <code>agent-portal.html</code> &rarr; Browser Flow &rarr; Login</li>
+                        <li>Open <code>customer-app.html</code> in same browser</li>
+                        <li>Click Login &rarr; <strong>instant access</strong> (no credentials)</li>
+                        <li>Logout from customer portal</li>
+                        <li>Try agent portal &rarr; session terminated</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="toggle-section">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-orange">C</span>
+                        Agent Tier Progression
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <ol style="margin-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 2;">
+                        <li>Authenticate as <code>agent.standard</code> (5 customers, 1% commission)</li>
+                        <li>Click "Record Customer Acquisition" &times; 5</li>
+                        <li>Watch tier change: STANDARD &rarr; SILVER</li>
+                        <li>New commission: 2%, new bonus: $250/month</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="toggle-section">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-purple">D</span>
+                        Token Claims Inspection
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <ol style="margin-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 2;">
+                        <li>Authenticate as <code>john.platinum</code></li>
+                        <li>Show decoded token:
+                            <ul style="margin-left: 20px; margin-top: 8px;">
+                                <li><code>account_tier: PLATINUM</code></li>
+                                <li><code>transaction_risk_score: 5 (MINIMAL)</code></li>
+                                <li><code>agent_incentives: {...}</code></li>
+                            </ul>
+                        </li>
+                        <li>Compare with <code>bob.standard</code> &rarr; STANDARD tier, $5k limit</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="toggle-section">
+                <div class="toggle-header" onclick="toggleSection(this)">
+                    <h3>
+                        <span class="badge badge-red">E</span>
+                        Fraud Detection
+                    </h3>
+                    <div class="toggle-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="toggle-content">
+                    <ol style="margin-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 2;">
+                        <li>Enter wrong password 3&times; for <code>john.platinum</code></li>
+                        <li>Open Keycloak Admin &rarr; Events &rarr; <code>LOGIN_ERROR</code></li>
+                        <li>Show <code>failed_login_attempts</code> attribute on user</li>
+                        <li>5th failure &rarr; <strong>account disabled automatically</strong></li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Security Section -->
+        <section id="security" class="section">
+            <div class="section-header">
+                <div class="section-label">Security</div>
+                <h2 class="section-title">Security Highlights</h2>
+                <p class="section-desc">Production-grade security patterns implemented in this demo.</p>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concern</th>
+                            <th>Implementation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Brute Force on MPIN</strong></td><td>3-attempt lockout, 15-min timeout, tracked in DB</td></tr>
+                        <tr><td><strong>OTP Abuse</strong></td><td>Per-IP + per-mobile rate limiting, device binding, hard lock after exhaustion</td></tr>
+                        <tr><td><strong>Token Security</strong></td><td>Short-lived JWTs, audience mapper, realm isolation</td></tr>
+                        <tr><td><strong>PAN/Mobile Integrity</strong></td><td>DB-enforced 1:1 mapping, checked at registration</td></tr>
+                        <tr><td><strong>Device Limits</strong></td><td>Rule engine: max 3 users/device, max 3 devices/user with cooldown</td></tr>
+                        <tr><td><strong>Session Security</strong></td><td>Time-limited session tokens, step-gated progression</td></tr>
+                        <tr><td><strong>Credential Storage</strong></td><td>MPIN via Keycloak credential manager (hashed), SHA-256 in custom table</td></tr>
+                        <tr><td><strong>Event Audit</strong></td><td>All auth events captured, published to Kafka for SIEM/audit trail</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 style="margin-top: 32px; margin-bottom: 16px; font-size: 17px;">Production Readiness Checklist</h3>
+            <ul class="feature-list">
+                <li><span class="feature-check">&#10003;</span><div class="feature-content"><h4>PKCE on all browser flows</h4><p>Prevents authorization code interception</p></div></li>
+                <li><span class="feature-check">&#10003;</span><div class="feature-content"><h4>Bearer token validation</h4><p>Every API call validated</p></div></li>
+                <li><span class="feature-check">&#10003;</span><div class="feature-content"><h4>Role-based access at API layer</h4><p>Enforced in resource providers</p></div></li>
+                <li><span class="feature-check">&#10003;</span><div class="feature-content"><h4>Fraud detection with auto account lockout</h4><p>Event listener monitors all actions</p></div></li>
+                <li><span class="feature-check">&#10003;</span><div class="feature-content"><h4>Audit trail on all auth events</h4><p>Complete event logging</p></div></li>
+                <li><span class="feature-check">&#10003;</span><div class="feature-content"><h4>Custom claims eliminate downstream DB calls</h4><p>Business context in tokens</p></div></li>
+                <li><span class="feature-check">&#10003;</span><div class="feature-content"><h4>Configurable token lifetimes</h4><p>5 min access, 30 min SSO idle</p></div></li>
+                <li><span class="feature-check">&#10003;</span><div class="feature-content"><h4>Multi-language theme support</h4><p>EN, ES localization</p></div></li>
+                <li><span class="feature-check">&#10003;</span><div class="feature-content"><h4>CORS headers configured</h4><p>Per environment configuration</p></div></li>
+                <li><span class="feature-check">&#10003;</span><div class="feature-content"><h4>Containerized with Docker Compose</h4><p>One-command deployment</p></div></li>
+            </ul>
+
+            <div class="callout callout-orange" style="margin-top: 24px;">
+                <strong>For production, additionally configure:</strong>
+                <ul style="margin-top: 8px; margin-left: 20px; font-size: 14px;">
+                    <li>TLS termination (HTTPS)</li>
+                    <li>External SMTP for email verification</li>
+                    <li>GeoIP lookup in fraud listener</li>
+                    <li>SIEM integration (Splunk, Elasticsearch)</li>
+                    <li>HA Keycloak cluster (Infinispan cache)</li>
                 </ul>
             </div>
         </section>
 
-        <!-- Slide 4 -->
-        <section>
-            <h2>Feature 1: Two Authentication Flows</h2>
-            <div class="grid-2">
-                <div class="feature-card">
-                    <h3 class="badge blue">Direct Grant Flow (Legacy / ATM)</h3>
-<pre><code class="language-http" style="padding: 15px;">Client → POST /token
-  username=agent.platinum
-  password=agent123
-  banking_pin=2468
-  grant_type=password
+        <div class="divider"></div>
 
-Keycloak → access_token (JWT)</code></pre>
-                    <ul style="font-size: 0.85em; margin-top: 15px;">
-                        <li>Single HTTP call, no browser required</li>
-                        <li>Custom PIN authenticator validates 4-digit PIN</li>
-                        <li>Used for ATM terminals, POS systems</li>
-                        <li>No SSO session created (API-only token)</li>
-                    </ul>
-                </div>
-                <div class="feature-card">
-                    <h3 class="badge green">Browser Flow (Web Apps / SSO)</h3>
-<pre><code class="language-http" style="padding: 15px;">Client → GET /auth?client_id=agent...
-Browser → Keycloak Login Page
-User → Enters credentials
-Keycloak → Redirect with auth_code
-Client → POST /token (+ PKCE)
-Keycloak → token + SSO cookies</code></pre>
-                    <ul style="font-size: 0.85em; margin-top: 15px;">
-                        <li>Full PKCE protection (SHA-256 challenge)</li>
-                        <li>SSO session cookies set in browser</li>
-                        <li>MFA integrates seamlessly</li>
-                        <li>Credentials never exposed to the client app</li>
-                    </ul>
-                </div>
+        <!-- Quick Start Section -->
+        <section id="quickstart" class="section">
+            <div class="section-header">
+                <div class="section-label">Getting Started</div>
+                <h2 class="section-title">Quick Start</h2>
+                <p class="section-desc">Run the complete demo with a single command.</p>
             </div>
-        </section>
 
-        <!-- Slide 5 -->
-        <section>
-            <h2>Feature 2: Custom PIN Authenticator (SPI)</h2>
-            <p><strong>File:</strong> <code>src/main/java/com/finsecure/auth/FinTechPinAuthenticator.java</code></p>
-            
-            <div class="grid-2">
-                <div>
-                    <h3>What it does:</h3>
-                    <ul>
-                        <li>Plugs into Keycloak's flow as a custom <code>Authenticator</code> SPI</li>
-                        <li>Reads <code>banking_pin</code> from the HTTP request form parameters</li>
-                        <li>Validates against user's <code>banking_pin</code> attribute</li>
-                        <li>Sets session notes (<code>pin_validated</code>) on success</li>
-                        <li>Returns structured JSON error on failure</li>
-                    </ul>
-                    <p class="muted-text" style="font-size: 0.85em; margin-top: 20px;"><strong>Why this matters:</strong> Legacy banking systems (ATMs, POS) can integrate with modern IAM without replacing their auth model.</p>
-                </div>
-                <div>
-                    <h3>Live Demo:</h3>
-<pre><code class="language-bash"># Success
-curl -X POST http://localhost:8082/realms/FinTechRealm/protocol/openid-connect/token \
-  -d "username=agent.platinum" \
-  -d "password=agent123" \
-  -d "banking_pin=2468" \
-  -d "grant_type=password" \
-  -d "client_id=agent-portal"
-
-# Failure — wrong PIN
-curl -X POST ... -d "banking_pin=9999"
-# → {"error": "Invalid banking PIN"}</code></pre>
-                </div>
-            </div>
-        </section>
-
-        <!-- Slide 6 -->
-        <section>
-            <h2>Feature 3: Custom Token Claims (Protocol Mappers)</h2>
-            <p style="margin-bottom: 20px;">Three custom OIDC Protocol Mappers inject business context directly into JWT tokens. <strong>No downstream DB calls needed.</strong></p>
-            
-            <div class="grid-3 scroll-container">
-                <div class="feature-card">
-                    <h3 style="font-size: 1em;">1. AgentTierMapper</h3>
-                    <p class="muted-text" style="font-size: 0.8em; margin-top:-10px;">Reads <code>customers_acquired</code> → calc tier.</p>
-<pre><code class="language-json" style="padding: 10px; font-size: 0.75em;">{
-  "agent_tier": "PLATINUM",
-  "customers_acquired": 250,
-  "agent_incentives": {
-    "commission_rate_pct": 5.0,
-    "monthly_bonus": 2000,
-    "next_tier": "MAX_TIER"
-  }
-}</code></pre>
-                </div>
-                
-                <div class="feature-card">
-                    <h3 style="font-size: 1em;">2. AccountTierMapper</h3>
-                    <p class="muted-text" style="font-size: 0.8em; margin-top:-10px;">Reads <code>account_balance</code> → calc tier.</p>
-<pre><code class="language-json" style="padding: 10px; font-size: 0.75em;">{
-  "account_tier": "PLATINUM",
-  "account_tier_metadata": {
-    "benefits":[
-      "Priority support", 
-      "Zero fees"
-    ],
-    "calculated_at": 1718000000000
-  }
-}</code></pre>
-                </div>
-
-                <div class="feature-card">
-                    <h3 style="font-size: 1em;">3. TransactionRiskScoreMapper</h3>
-                    <p class="muted-text" style="font-size: 0.8em; margin-top:-10px;">Multi-factor risk scoring.</p>
-<pre><code class="language-json" style="padding: 10px; font-size: 0.75em;">{
-  "transaction_risk_score": 15,
-  "risk_level": "LOW",
-  "factors": [
-    "login_new_ip (+15)"
-  ]
-}</code></pre>
-                </div>
-            </div>
-        </section>
-
-        <!-- Slide 7 -->
-        <section>
-            <h2>Feature 4: Custom REST APIs (Realm Resource SPIs)</h2>
-            <p>Two custom REST endpoints registered directly inside Keycloak's realm URL space.</p>
-            
-            <div class="grid-2 scroll-container">
-                <div>
-                    <h3>Agent Network API</h3>
-                    <p class="muted-text" style="font-size: 0.8em;"><code>src/main/java/com/finsecure/rest/AgentNetworkResource.java</code></p>
-                    <table>
-                        <thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
-                        <tbody>
-                            <tr><td><code>/agent-network/tier</code></td><td>GET</td><td>Agent's current tier + incentives</td></tr>
-                            <tr><td><code>/agent-network/incentives</code></td><td>GET</td><td>Full tier breakdown table</td></tr>
-                            <tr><td><code>/agent-network/record-acquisition</code></td><td>POST</td><td>Increment count, auto-promote tier</td></tr>
-                        </tbody>
-                    </table>
-                    <p style="font-size: 0.8em;"><em>Role check enforced on write ops (<code>agent</code>, <code>senior_agent</code>).</em></p>
-                </div>
-                
-                <div>
-                    <h3>Account Info API</h3>
-                    <p class="muted-text" style="font-size: 0.8em;"><code>src/main/java/com/finsecure/rest/AccountInfoResource.java</code></p>
-                    <table>
-                        <thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
-                        <tbody>
-                            <tr><td><code>/account-info/me</code></td><td>GET</td><td>Full account profile + tier</td></tr>
-                            <tr><td><code>/account-info/tier</code></td><td>GET</td><td>Tier + amount to next tier</td></tr>
-                            <tr><td><code>/account-info/risk-score</code></td><td>GET</td><td>Security score (MFA, KYC)</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- Slide 8 -->
-        <section>
-            <h2>Feature 5: Fraud Detection Event Listener (SPI)</h2>
-            <p><strong>File:</strong> <code>src/main/java/com/finsecure/event/FraudDetectionEventListener.java</code></p>
-            <p>Keycloak fires events on every auth action. This SPI intercepts them all to detect anomalies.</p>
-            
-            <div class="grid-2">
-                <div>
-                    <h3>Events Monitored:</h3>
-                    <table>
-                        <thead><tr><th>Event</th><th>Action Taken by SPI</th></tr></thead>
-                        <tbody>
-                            <tr><td><code>LOGIN</code></td><td>Update <code>last_login</code>, <code>last_ip</code>, reset counters</td></tr>
-                            <tr><td><code>LOGIN_ERROR</code></td><td>Increment fails, auto-disable after 5</td></tr>
-                            <tr><td><code>LOGOUT</code></td><td>Record <code>last_logout_at</code></td></tr>
-                            <tr><td><code>UPDATE_PASSWORD</code></td><td>Detect IP change, flag for alert</td></tr>
-                            <tr><td><code>Admin Events</code></td><td>Alert on <code>ROLE</code> and <code>USER</code> changes</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div>
-                    <div class="callout" style="margin-top: 0;">
-                        <h3>Fraud Patterns Detected:</h3>
-                        <ul>
-                            <li>Login from new IP address</li>
-                            <li>Rapid re-login (&lt; 60 seconds between logins)</li>
-                            <li>Login between 2 AM – 5 AM</li>
-                            <li>Multiple failed attempts → auto account lock</li>
-                        </ul>
-                        <p style="margin-top: 20px; font-weight: 600;">Production Integration:</p>
-                        <p style="font-size: 0.9em;">Easily routable to SIEM, Elasticsearch, or SOC notifications via Kafka integration.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Slide 9 -->
-        <section>
-            <h2>Feature 6: Transaction Limit Auth Policy (SPI)</h2>
-            <p><strong>File:</strong> <code>src/main/java/com/finsecure/policy/TransactionLimitPolicy.java</code></p>
-            <p>A custom Keycloak Authorization Policy that enforces transaction limits at the IAM layer.</p>
-            
-            <div class="grid-2">
-                <div>
-                    <h3>Decision Logic:</h3>
-<pre><code class="language-plaintext">1. Extract transaction_amount from context
-2. Verify KYC status = "VERIFIED" → deny if not
-3. Calculate account tier from account_balance
-4. Compare amount against tier limit
-5. Grant or Deny access</code></pre>
-                    <p class="muted-text" style="font-size: 0.85em; margin-top: 20px;"><strong>Why this matters:</strong> Authorization policy lives in the central IAM layer — not scattered across microservices. One policy, enforced everywhere.</p>
-                </div>
-                <div>
-                    <h3>Tier Limits Enforced:</h3>
-                    <table>
-                        <thead>
-                            <tr><th>Tier</th><th>Daily Transaction Limit</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td><span class="badge">STANDARD</span></td><td>$5,000</td></tr>
-                            <tr><td><span class="badge">SILVER</span></td><td>$25,000</td></tr>
-                            <tr><td><span class="badge gold">GOLD</span></td><td>$100,000</td></tr>
-                            <tr><td><span class="badge">PLATINUM</span></td><td>$500,000</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- Slide 10 -->
-        <section>
-            <h2>Feature 7: Single Sign-On (SSO)</h2>
-            <p><strong>Demo Portal:</strong> <code>demo-apps/web/sso-demo.html</code></p>
-            
-            <div class="grid-2">
-                <div>
-                    <h3>How it works:</h3>
-<pre><code class="language-plaintext" style="padding: 15px;">Step 1: User logs into Agent Portal
-        → Keycloak sets SSO cookie in browser
-
-Step 2: User opens Customer Portal
-        → Browser sends SSO cookie
-        → Keycloak recognizes session 
-        → Issues token (NO LOGIN PROMPT)
-
-Step 3: User logs out from any app
-        → Keycloak invalidates SSO session
-        → All apps lose access simultaneously</code></pre>
-                </div>
-                <div>
-                    <h3>Session Configuration:</h3>
-                    <ul>
-                        <li><strong>SSO Session Idle:</strong> 30 minutes</li>
-                        <li><strong>SSO Session Max:</strong> 10 hours</li>
-                        <li><strong>Access Token Lifetime:</strong> 5 minutes</li>
-                        <li><strong>Protocol:</strong> Auth Code + PKCE</li>
-                    </ul>
-                    
-                    <div class="callout">
-                        <strong>Live Test:</strong>
-                        <ol style="margin-top: 10px; font-size: 0.9em;">
-                            <li>Login at <code>/agent-portal.html</code></li>
-                            <li>Open <code>/customer-app.html</code></li>
-                            <li>Click Login → <strong>Instant Access</strong></li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Slide 11 -->
-        <section>
-            <h2>Feature 8: Multi-Factor Authentication (MFA)</h2>
-            <p><strong>Protocol:</strong> TOTP (RFC 6238) — 6-digit, 30-second window</p>
-
-            <div class="grid-2">
-                <div>
-                    <h3>MFA + SSO Behavior:</h3>
-<pre><code class="language-plaintext" style="padding: 15px;">Login App 1 → Password → OTP ✓
-Open App 2  → Auto-auth (SSO) — NO OTP
-Open App 3  → Auto-auth (SSO) — NO OTP
-Logout      → All sessions terminated
-Next login  → OTP required again</code></pre>
-                    <p style="font-weight: 600; color: #0f7b6c;">MFA is validated once per SSO session — not per application.</p>
-                </div>
-                <div>
-                    <h3>Setup Flow:</h3>
-                    <ol>
-                        <li>Login to any portal</li>
-                        <li>Navigate to Keycloak Account Console</li>
-                        <li>Security → Two-factor Authentication → Scan QR</li>
-                    </ol>
-                    <p style="font-size: 0.85em; margin-top: 15px;" class="muted-text">Compatible with Google Authenticator, Authy, Microsoft Authenticator.</p>
-                    
-                    <h3 style="margin-top: 20px;">Brute Force Protection:</h3>
-                    <ul style="font-size: 0.85em;">
-                        <li>5 failed attempts → account temporarily locked</li>
-                        <li>Configurable lockout duration</li>
-                        <li>All failures logged by Fraud Detection listener</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- Slide 12 -->
-        <section>
-            <h2>Feature 9: Custom Login Theme</h2>
-            <p><strong>Directory:</strong> <code>themes/finsecure-bank/login/</code></p>
-            
-            <div class="grid-2">
-                <div>
-                    <table>
-                        <thead><tr><th>File</th><th>Purpose</th></tr></thead>
-                        <tbody>
-                            <tr><td><code>theme.properties</code></td><td>Extends base, loads custom CSS/JS</td></tr>
-                            <tr><td><code>login.ftl</code></td><td>Custom HTML template (bank branding)</td></tr>
-                            <tr><td><code>finsecure.css</code></td><td>Full brand redesign (cards, layout)</td></tr>
-                            <tr><td><code>finsecure.js</code></td><td>Password strength, biometric hooks</td></tr>
-                            <tr><td><code>messages_es.properties</code></td><td>Spanish localization</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div>
-                    <h3>Advanced Capabilities:</h3>
-                    <ul>
-                        <li>Conditional branding per <code>client_id</code> (agent vs customer styling)</li>
-                        <li>Dark mode auto-detection (<code>prefers-color-scheme</code>)</li>
-                        <li>Corporate SSO button (SAML federation)</li>
-                        <li>Loading spinner on form submit</li>
-                        <li>Biometric authentication hook (WebAuthn-ready)</li>
-                    </ul>
-                    <p class="muted-text" style="font-size: 0.8em; margin-top: 20px;"><strong>Deployment:</strong> Docker volume mount → <code>docker cp themes/ finsecure-keycloak:/opt/keycloak/</code></p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Slide 13 -->
-        <section>
-            <h2>Feature 10: Role-Based Access Control (RBAC)</h2>
-            <p>9 distinct roles configured inside <code>FinTechRealm</code>.</p>
-            
-            <div class="scroll-container">
-                <table>
-                    <thead>
-                        <tr><th>Role</th><th>Assigned Users</th><th>Access Level</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><code>customer</code></td><td>alice.silver, bob.standard</td><td>Own account data only</td></tr>
-                        <tr><td><code>premium_customer</code></td><td>john.platinum, jane.gold</td><td>Premium features</td></tr>
-                        <tr><td><code>agent</code></td><td>agent.standard → platinum</td><td>Agent APIs, customer acquisition</td></tr>
-                        <tr><td><code>senior_agent</code></td><td>agent.gold, agent.platinum</td><td>Extended agent features</td></tr>
-                        <tr><td><code>agent_manager</code></td><td>manager.north</td><td>Team management, all agent data</td></tr>
-                        <tr><td><code>branch_manager</code></td><td>branch.manager</td><td>Full branch operations</td></tr>
-                        <tr><td><code>auditor</code></td><td>auditor.compliance</td><td>Read-only audit access</td></tr>
-                        <tr><td><code>support_staff</code></td><td>support.staff</td><td>Customer support tools</td></tr>
-                        <tr><td><code>admin</code></td><td>admin</td><td>Full realm administration</td></tr>
-                    </tbody>
-                </table>
-                <div class="callout">
-                    <p style="margin: 0;"><strong>Role enforcement happens at two layers:</strong></p>
-                    <ol style="margin-top: 5px;">
-                        <li>Token claims — roles are embedded directly in the JWT.</li>
-                        <li>API layer — <code>AgentNetworkResource</code> strictly checks roles before permitting database write operations.</li>
-                    </ol>
-                </div>
-            </div>
-        </section>
-
-        <!-- Slide 14 -->
-        <section>
-            <h2>Demo Users Reference</h2>
-            <div class="scroll-container">
-                <table>
-                    <thead>
-                        <tr><th>User</th><th>Password</th><th>PIN</th><th>Role</th><th>Tier / Context</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><code>john.platinum</code></td><td>password123</td><td>1234</td><td>premium_customer</td><td>Account: <span class="badge">PLATINUM</span> ($250k)</td></tr>
-                        <tr><td><code>jane.gold</code></td><td>password123</td><td>5678</td><td>premium_customer</td><td>Account: <span class="badge gold">GOLD</span> ($75k)</td></tr>
-                        <tr><td><code>alice.silver</code></td><td>password123</td><td>9012</td><td>customer</td><td>Account: <span class="badge">SILVER</span> ($25k)</td></tr>
-                        <tr><td><code>bob.standard</code></td><td>password123</td><td>3456</td><td>customer</td><td>Account: <span class="badge">STANDARD</span> ($5k)</td></tr>
-                        <tr><td><code>agent.platinum</code></td><td>agent123</td><td>2468</td><td>senior_agent</td><td>Agent: <span class="badge">PLATINUM</span> (250 leads)</td></tr>
-                        <tr><td><code>agent.gold</code></td><td>agent123</td><td>1357</td><td>senior_agent</td><td>Agent: <span class="badge gold">GOLD</span> (85 leads)</td></tr>
-                        <tr><td><code>agent.silver</code></td><td>agent123</td><td>7531</td><td>agent</td><td>Agent: <span class="badge">SILVER</span> (28 leads)</td></tr>
-                        <tr><td><code>agent.standard</code></td><td>agent123</td><td>8642</td><td>agent</td><td>Agent: <span class="badge">STANDARD</span> (5 leads)</td></tr>
-                        <tr><td><code>manager.north</code></td><td>manager123</td><td>5555</td><td>agent_manager</td><td>—</td></tr>
-                        <tr><td><code>branch.manager</code></td><td>branch123</td><td>6666</td><td>branch_manager</td><td>—</td></tr>
-                        <tr><td><code>auditor.compliance</code></td><td>auditor123</td><td>7777</td><td>auditor</td><td>—</td></tr>
-                        <tr><td><code>unverified.user</code></td><td>unverified</td><td>—</td><td>customer</td><td>KYC: UNVERIFIED</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Slide 15 -->
-        <section>
-            <h2>Live Demo Scenarios</h2>
-            <div class="grid-3 scroll-container">
-                <div class="feature-card">
-                    <h3 style="font-size: 1.1em;">A: PIN Auth</h3>
-<pre><code class="language-plaintext" style="padding: 10px; font-size: 0.75em;">1. Open Agent Portal (Direct Grant)
-2. Enter: agent.platinum / agent123 / 2468
-3. Click Authenticate
-4. View decoded JWT (PLATINUM tier)
-5. Enter wrong PIN → show rejection</code></pre>
-                </div>
-                <div class="feature-card">
-                    <h3 style="font-size: 1.1em;">B: SSO in Action</h3>
-<pre><code class="language-plaintext" style="padding: 10px; font-size: 0.75em;">1. Open agent-portal.html → Login
-2. Open customer-app.html in same browser
-3. Click Login → instant access!
-4. Logout from customer portal
-5. Try agent portal → session terminated</code></pre>
-                </div>
-                <div class="feature-card">
-                    <h3 style="font-size: 1.1em;">C: Tier Progression</h3>
-<pre><code class="language-plaintext" style="padding: 10px; font-size: 0.75em;">1. Login as agent.standard (1% comm)
-2. Click "Record Acquisition" × 5
-3. Watch tier: STANDARD → SILVER
-4. View new 2% commission embedded
-   in live token updates.</code></pre>
-                </div>
-                <div class="feature-card">
-                    <h3 style="font-size: 1.1em;">D: Token Claims</h3>
-<pre><code class="language-plaintext" style="padding: 10px; font-size: 0.75em;">1. Authenticate as john.platinum
-2. Inspect JWT:
-   - account_tier: PLATINUM
-   - transaction_risk: 5 (MINIMAL)
-3. Compare with bob.standard</code></pre>
-                </div>
-                <div class="feature-card">
-                    <h3 style="font-size: 1.1em;">E: Fraud Detection</h3>
-<pre><code class="language-plaintext" style="padding: 10px; font-size: 0.75em;">1. Enter wrong password 3× for john
-2. Open KC Admin → Events → LOGIN_ERROR
-3. View failed_login_attempts attribute
-4. 5th failure → auto-disabled</code></pre>
-                </div>
-            </div>
-        </section>
-
-        <!-- Slide 16 -->
-        <section>
-            <h2>Why Keycloak vs. Building Your Own</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Capability</th>
-                        <th>Build Your Own</th>
-                        <th>Keycloak Platform</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>OAuth 2.0 / OIDC</td><td class="muted-text">Months of dev work</td><td>✅ Built-in</td></tr>
-                    <tr><td>SSO Across Apps</td><td class="muted-text">Complex cookie/session mgmt</td><td>✅ Built-in</td></tr>
-                    <tr><td>MFA (TOTP, WebAuthn)</td><td class="muted-text">Separate library + UI required</td><td>✅ Built-in</td></tr>
-                    <tr><td>Brute Force Protection</td><td class="muted-text">Custom DB tracking logic</td><td>✅ Built-in</td></tr>
-                    <tr><td>Audit Logging</td><td class="muted-text">Custom event system</td><td>✅ Built-in</td></tr>
-                    <tr><td>Custom Auth Flows</td><td class="muted-text">N/A</td><td>✅ SPI extension points</td></tr>
-                    <tr><td>Custom Token Claims</td><td class="muted-text">Middleware layer code</td><td>✅ Protocol Mappers</td></tr>
-                    <tr><td>Custom APIs in Realm</td><td class="muted-text">Separate microservice</td><td>✅ RealmResourceProvider</td></tr>
-                    <tr><td>SAML & Social Login</td><td class="muted-text">Per-provider integration</td><td>✅ Built-in</td></tr>
-                </tbody>
-            </table>
-            <p style="text-align: center; margin-top: 20px; font-weight: 700; font-size: 1.2em; color: #0f7b6c;">Time to production-ready IAM: Days, not months.</p>
-        </section>
-
-        <!-- Slide 17 -->
-        <section>
-            <h2>Custom SPI Summary</h2>
-            <p>All 7 custom extensions are packaged as a single JAR: <code>fintech-keycloak-spi.jar</code></p>
-            <div class="scroll-container">
-                <table>
-                    <thead>
-                        <tr><th>SPI Class</th><th>Extension Type</th><th>Purpose</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><code>FinTechPinAuthenticator</code></td><td><code>Authenticator</code></td><td>4-digit PIN validation in auth flow</td></tr>
-                        <tr><td><code>AgentTierMapper</code></td><td><code>ProtocolMapper</code></td><td>Inject agent tier + incentives into JWT</td></tr>
-                        <tr><td><code>AccountTierMapper</code></td><td><code>ProtocolMapper</code></td><td>Inject account tier + benefits into JWT</td></tr>
-                        <tr><td><code>TransactionRiskScoreMapper</code></td><td><code>ProtocolMapper</code></td><td>Inject fraud risk score into JWT</td></tr>
-                        <tr><td><code>AgentNetworkResource</code></td><td><code>RealmResourceProvider</code></td><td>REST API for agent operations</td></tr>
-                        <tr><td><code>AccountInfoResource</code></td><td><code>RealmResourceProvider</code></td><td>REST API for account data</td></tr>
-                        <tr><td><code>FraudDetectionEventListener</code></td><td><code>EventListenerProvider</code></td><td>Monitor all auth events, detect fraud</td></tr>
-                        <tr><td><code>TransactionLimitPolicy</code></td><td><code>PolicyProvider</code></td><td>Enforce tier-based transaction limits</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Slide 18 -->
-        <section>
-            <h2>Quick Start</h2>
-            <div class="grid-2">
-                <div>
-<pre><code class="language-bash"># One command to run everything
+            <div class="code-block-title">One Command Setup</div>
+            <pre><code># Clone and run
 cd keycloak-demo
 chmod +x scripts/setup-complete-demo.sh
 ./scripts/setup-complete-demo.sh</code></pre>
-                    <h3 style="margin-top: 20px;">What it does:</h3>
-                    <ol style="font-size: 0.85em;">
-                        <li>Builds the custom SPI JAR (<code>mvn package</code>)</li>
-                        <li>Builds the Docker image with JAR pre-loaded</li>
-                        <li>Starts KC 26 + PostgreSQL via Docker Compose</li>
-                        <li>Runs <code>setup-realm.py</code> (creates clients, users)</li>
-                        <li>Starts the static web server for demo portals</li>
-                    </ol>
+
+            <h3 style="margin-top: 32px; margin-bottom: 16px; font-size: 17px;">What It Does</h3>
+            <div class="step-flow">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Build SPI JAR</h4>
+                        <p><code>mvn clean package</code></p>
+                    </div>
                 </div>
-                <div>
-                    <h3>Access Points:</h3>
-                    <table>
-                        <thead><tr><th>URL</th><th>Purpose</th></tr></thead>
-                        <tbody>
-                            <tr><td><code>:3000/portal.html</code></td><td>Demo hub — start here</td></tr>
-                            <tr><td><code>:3000/agent-portal.html</code></td><td>Agent portal (Direct/Browser)</td></tr>
-                            <tr><td><code>:3000/customer-app.html</code></td><td>Customer portal (SSO + MFA)</td></tr>
-                            <tr><td><code>:3000/sso-demo.html</code></td><td>SSO demonstration</td></tr>
-                            <tr><td><code>localhost:8082</code></td><td>Admin Console (admin/admin)</td></tr>
-                        </tbody>
-                    </table>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Build Docker Image</h4>
+                        <p>Docker image with JAR pre-loaded</p>
+                    </div>
                 </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Start Services</h4>
+                        <p>Keycloak 26 + PostgreSQL 16 via Docker Compose</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Configure Realm</h4>
+                        <p><code>setup-realm.py</code> creates realm, clients, users, roles, mappers</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>Start Web Server</h4>
+                        <p>Static web server for demo portals</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 32px; margin-bottom: 16px; font-size: 17px;">Access Points</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>URL</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>http://localhost:3000/portal.html</code></td><td>Demo hub &mdash; start here</td></tr>
+                        <tr><td><code>http://localhost:3000/agent-portal.html</code></td><td>Agent portal (Direct Grant + Browser Flow)</td></tr>
+                        <tr><td><code>http://localhost:3000/customer-app.html</code></td><td>Customer portal (SSO + MFA)</td></tr>
+                        <tr><td><code>http://localhost:3000/sso-demo.html</code></td><td>SSO demonstration</td></tr>
+                        <tr><td><code>http://localhost:8082</code></td><td>Keycloak Admin Console (admin/admin)</td></tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 
-        <!-- Slide 19 -->
-        <section>
-            <h2>Production Readiness Checklist</h2>
-            <p>This demo is structured to reflect actual production patterns:</p>
-            <div class="grid-2">
-                <div>
-                    <ul style="list-style-type: none; padding: 0; line-height: 2;">
-                        <li>✅ PKCE on all browser flows</li>
-                        <li>✅ Bearer token validation on APIs</li>
-                        <li>✅ Role-based access enforced at API layer</li>
-                        <li>✅ Fraud detection w/ auto account lockout</li>
-                        <li>✅ Audit trail on all auth events</li>
-                    </ul>
-                </div>
-                <div>
-                    <ul style="list-style-type: none; padding: 0; line-height: 2;">
-                        <li>✅ Custom claims = zero downstream DB calls</li>
-                        <li>✅ Configurable token lifetimes</li>
-                        <li>✅ Multi-language theme support (EN, ES)</li>
-                        <li>✅ CORS configured per environment</li>
-                        <li>✅ Containerized with Docker Compose</li>
-                    </ul>
-                </div>
+        <div class="divider"></div>
+
+        <!-- Comparison Section -->
+        <section id="comparison" class="section">
+            <div class="section-header">
+                <div class="section-label">Comparison</div>
+                <h2 class="section-title">Keycloak vs Build Your Own</h2>
+                <p class="section-desc">Why Keycloak is the smart choice for enterprise IAM.</p>
             </div>
-            
-            <div class="callout">
-                <h3 style="font-size: 1.1em; margin-bottom: 5px;">For Real Production Environments:</h3>
-                <p style="font-size: 0.85em; margin: 0;">Configure TLS (HTTPS) • External SMTP for email verification • GeoIP lookup in fraud listener • SIEM integration (Splunk, Elasticsearch) • HA Keycloak cluster (Infinispan cache)</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Capability</th>
+                            <th>Build Your Own</th>
+                            <th>Keycloak</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>OAuth 2.0 / OIDC</td><td>Months of dev</td><td><span class="badge badge-green">Built-in</span></td></tr>
+                        <tr><td>SSO across apps</td><td>Complex cookie/session mgmt</td><td><span class="badge badge-green">Built-in</span></td></tr>
+                        <tr><td>MFA (TOTP, WebAuthn)</td><td>Separate library + UI</td><td><span class="badge badge-green">Built-in</span></td></tr>
+                        <tr><td>Brute force protection</td><td>Custom logic</td><td><span class="badge badge-green">Built-in</span></td></tr>
+                        <tr><td>Admin console</td><td>Build from scratch</td><td><span class="badge badge-green">Built-in</span></td></tr>
+                        <tr><td>Audit logging</td><td>Custom event system</td><td><span class="badge badge-green">Built-in</span></td></tr>
+                        <tr><td>Custom auth flows</td><td>N/A</td><td><span class="badge badge-green">SPI extension points</span></td></tr>
+                        <tr><td>Custom token claims</td><td>Middleware layer</td><td><span class="badge badge-green">Protocol Mappers</span></td></tr>
+                        <tr><td>Custom APIs in realm</td><td>Separate service</td><td><span class="badge badge-green">RealmResourceProvider</span></td></tr>
+                        <tr><td>SAML federation</td><td>Separate library</td><td><span class="badge badge-green">Built-in</span></td></tr>
+                        <tr><td>Social login</td><td>Per-provider integration</td><td><span class="badge badge-green">Built-in</span></td></tr>
+                        <tr><td>Maintenance burden</td><td>Your team</td><td><span class="badge badge-green">Open source community</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout callout-green" style="margin-top: 24px;">
+                <strong>Bottom line:</strong> Keycloak handles the 80% that&apos;s standard. Your SPI handles the 20% that&apos;s unique to your business. Time to production-ready IAM: <mark>Days, not months.</mark>
             </div>
         </section>
 
-        <!-- Slide 20 -->
-        <section>
-            <h2>Next Steps</h2>
-            <div class="grid-2">
-                <div>
-                    <h3>Immediate Actions:</h3>
-                    <ol style="font-size: 0.9em; line-height: 1.8;">
-                        <li><strong>Run the demo</strong> — <code>./setup-complete-demo.sh</code></li>
-                        <li><strong>Walk through</strong> all 5 live scenarios with the team</li>
-                        <li><strong>Inspect the JWT</strong> — see business context embedded</li>
-                        <li><strong>Review SPI code</strong> — understand the extension model</li>
-                    </ol>
-                </div>
-                <div>
-                    <h3>Adoption Path:</h3>
-<pre><code class="language-plaintext" style="font-size: 0.7em;">Week 1-2:  Deploy Keycloak in dev environment
-           Migrate one internal app to OIDC
+        <div class="divider"></div>
 
-Week 3-4:  Enable SSO across 2-3 apps
-           Configure MFA for privileged users
-
-Month 2:   Write first custom SPI (token mapper)
-           Integrate event listener with SIEM
-
-Month 3:   Full production rollout
-           Decommission legacy auth systems</code></pre>
-                </div>
+        <!-- Next Steps Section -->
+        <section id="next-steps" class="section">
+            <div class="section-header">
+                <div class="section-label">Adoption</div>
+                <h2 class="section-title">Next Steps</h2>
             </div>
-            
-            <p style="text-align: center; font-size: 0.8em; margin-top: 40px;" class="muted-text">
-                <strong>FinSecure Bank IAM Demo</strong> | Keycloak 26 | Version 1.0.0
-            </p>
+
+            <h3 style="margin-bottom: 16px; font-size: 17px;">Immediate Actions</h3>
+            <ol style="margin-left: 20px; margin-bottom: 32px; color: var(--text-secondary); font-size: 14px; line-height: 2;">
+                <li><strong>Run the demo</strong> &mdash; <code>./scripts/setup-complete-demo.sh</code> &mdash; takes ~5 minutes</li>
+                <li><strong>Walk through all 5 live scenarios</strong> with your team</li>
+                <li><strong>Inspect the JWT</strong> &mdash; see business context embedded in tokens</li>
+                <li><strong>Review the SPI code</strong> &mdash; understand the extension model</li>
+            </ol>
+
+            <h3 style="margin-bottom: 16px; font-size: 17px;">Adoption Path</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Timeline</th>
+                            <th>Milestone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Week 1-2</strong></td><td>Deploy Keycloak in dev environment. Migrate one internal app to OIDC.</td></tr>
+                        <tr><td><strong>Week 3-4</strong></td><td>Enable SSO across 2-3 apps. Configure MFA for privileged users.</td></tr>
+                        <tr><td><strong>Month 2</strong></td><td>Write first custom SPI (token mapper). Integrate fraud event listener with SIEM.</td></tr>
+                        <tr><td><strong>Month 3</strong></td><td>Full production rollout. Decommission legacy auth systems.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 style="margin: 32px 0 16px; font-size: 17px;">Resources</h3>
+            <ul style="margin-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 2;">
+                <li><a href="https://www.keycloak.org/docs/latest/" style="color: var(--accent-blue);">Keycloak Documentation</a></li>
+                <li><a href="https://www.keycloak.org/docs/latest/server_development/" style="color: var(--accent-blue);">SPI Development Guide</a></li>
+                <li>This Demo Repository: <code>keycloak-demo/</code> &mdash; fully documented, production-structured</li>
+            </ul>
         </section>
+    </main>
 
-    </div>
-</div>
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">FinSecure Bank IAM Demo | Keycloak 26 | Version 1.0.0</p>
+        <p class="footer-text" style="margin-top: 8px; font-size: 13px;">Built on Keycloak 26.x &middot; Java 17 &middot; PostgreSQL &middot; Redis &middot; Kafka / Azure Event Hubs</p>
+        <div class="footer-links">
+            <a href="https://www.keycloak.org/">Keycloak</a>
+            <a href="https://www.keycloak.org/docs/latest/server_development/">SPI Docs</a>
+            <a href="https://github.com/">GitHub</a>
+        </div>
+        <p class="footer-text" style="margin-top: 24px; font-size: 12px; color: var(--text-muted);">Demonstration purposes only</p>
+    </footer>
 
-<!-- Reveal.js & Plugins -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>
+        // Toggle sections
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('open');
+        }
 
-<script>
-    // Initialize Presentation - Optimized for Full Viewport Spread
-    Reveal.initialize({
-        hash: true,           
-        slideNumber: 'c/t',   
-        transition: 'none',   
-        controls: true,       
-        progress: true,       
-        center: false,        
-        margin: 0.04,
-        
-        // Setting a very wide default resolution makes it responsive 
-        // to modern 16:9 and ultrawide monitors perfectly.
-        width: 1440,          
-        height: 900,
-        
-        // Allows the slides to scale smoothly without breaking layout
-        minScale: 0.2,
-        maxScale: 2.0
-    });
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
 
-    // Initialize Syntax Highlighting
-    hljs.highlightAll();
-</script>
+        // Active TOC highlighting
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    document.querySelectorAll('.toc a').forEach(a => a.classList.remove('active'));
+                    const activeLink = document.querySelector(`.toc a[href="#${entry.target.id}"]`);
+                    if (activeLink) activeLink.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-20% 0px -80% 0px' });
 
+        document.querySelectorAll('section[id]').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
 </body>
 </html>
