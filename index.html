@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Keycloak as Enterprise IAM - Technical Demo</title>
+    <title>Keycloak as Enterprise IAM</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,12 +17,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
 
     <style>
-        /* NOTION THEME CSS */
+        /* NOTION THEME CSS - FULL VIEWPORT OPTIMIZED */
         :root {
             --r-main-font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             --r-heading-font: var(--r-main-font);
-            --r-background-color: #ffffff; /* Notion White */
-            --r-main-color: #37352f;       /* Notion Text Gray/Black */
+            --r-background-color: #ffffff; 
+            --r-main-color: #37352f;       
             --r-heading-color: #37352f;
             --r-link-color: #0a85d1;
             --r-link-color-hover: #005c99;
@@ -41,144 +41,167 @@
             letter-spacing: -0.01em;
             color: #37352f;
             text-shadow: none;
+            width: 100%;
         }
 
-        .reveal h1 { font-size: 2.5em; }
+        .reveal h1 { font-size: 2.8em; }
         .reveal h2 { 
             font-size: 1.8em; 
-            border-bottom: 1px solid #ededeb; /* Notion subtle divider */
-            padding-bottom: 10px; 
+            border-bottom: 2px solid #ededeb; 
+            padding-bottom: 15px; 
             margin-bottom: 30px; 
             text-align: left; 
+            width: 100%;
         }
         
-        /* Force left alignment for standard content */
+        .reveal h3 { font-size: 1.3em; margin-bottom: 15px; }
+
+        /* Force left alignment & width */
         .reveal p, .reveal li { 
             text-align: left; 
-            font-size: 0.9em; 
+            font-size: 0.95em; 
             line-height: 1.6; 
             color: #37352f;
         }
         
-        /* Center text for the title slide */
         .reveal .center-text p, .reveal .center-text h1, .reveal .center-text h3 { 
             text-align: center; 
         }
 
-        /* Inline Code (Notion style: red text, gray bg) */
+        /* Inline Code */
         .reveal p code, .reveal li code, .reveal td code {
             background: rgba(135, 131, 120, 0.15);
             color: #eb5757;
-            padding: 0.1em 0.3em;
-            border-radius: 3px;
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
             font-size: 0.85em;
             font-family: 'Fira Code', monospace;
         }
 
         /* Blockquotes */
         .reveal blockquote {
-            border-left: 3px solid #37352f;
-            background: #f7f6f3; /* Notion Callout Background */
+            border-left: 4px solid #37352f;
+            background: #f7f6f3; 
             color: #37352f;
-            padding: 15px 25px;
-            border-radius: 3px;
-            font-style: normal; /* Notion quotes aren't heavily italicized usually */
+            padding: 20px 30px;
+            border-radius: 4px;
+            font-style: normal; 
             width: 100%;
-            margin: 0 auto 30px 0;
+            margin: 0 0 30px 0;
             box-shadow: none;
             font-weight: 500;
+            box-sizing: border-box;
         }
 
-        /* Layout Helpers */
+        /* Responsive Grids that stretch full width */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 40px;
             align-items: start;
+            width: 100%;
         }
         
         .grid-3 {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
+            gap: 30px;
             align-items: start;
+            width: 100%;
         }
 
-        /* Tables */
+        /* Tables (Notion Database Style) */
         .reveal table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.75em;
-            margin-bottom: 20px;
+            font-size: 0.8em;
+            margin-bottom: 25px;
         }
         .reveal table th {
-            color: #37352f;
-            font-weight: 600;
+            color: #787774;
+            font-weight: 500;
             padding: 12px 15px;
             border-bottom: 2px solid #ededeb;
             text-align: left;
+            background: #fbfbfc;
         }
         .reveal table td {
-            padding: 10px 15px;
+            padding: 12px 15px;
             border-bottom: 1px solid #ededeb;
+            vertical-align: top;
         }
 
-        /* Code Blocks - Fixing the Architecture Tree */
+        /* Code Blocks */
         .reveal pre {
             width: 100%;
-            margin: 0;
+            margin: 0 0 20px 0;
             box-shadow: none;
-            border-radius: 4px;
+            border-radius: 6px;
             border: 1px solid #ededeb;
             background: #f7f6f3;
-            text-align: left !important; /* Forces the ASCII art to align left */
+            text-align: left !important; 
         }
         .reveal pre code {
             font-family: 'Fira Code', monospace;
-            font-size: 0.8em;
-            padding: 20px;
-            line-height: 1.3;
-            text-align: left !important; /* Critical for diagram structure */
+            font-size: 0.85em;
+            padding: 25px;
+            line-height: 1.4;
+            text-align: left !important; 
             background: transparent;
             color: #37352f;
         }
 
-        /* Scrollable container for heavy slides */
+        /* Scrollable container for massive screens */
         .scroll-container {
-            max-height: 65vh;
+            max-height: 75vh;
             overflow-y: auto;
-            padding-right: 15px;
+            padding-right: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
-        .scroll-container::-webkit-scrollbar { width: 6px; }
+        .scroll-container::-webkit-scrollbar { width: 8px; }
         .scroll-container::-webkit-scrollbar-thumb { background: #d3d1cb; border-radius: 4px; }
 
-        /* Cards for Features */
+        /* Feature Cards */
         .feature-card {
             background: #ffffff;
             border: 1px solid #ededeb;
-            border-radius: 6px;
-            padding: 20px;
+            border-radius: 8px;
+            padding: 25px;
             height: 100%;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            box-sizing: border-box;
         }
         .feature-card h3 { 
-            font-size: 1.1em; 
+            font-size: 1.2em; 
             margin-top: 0; 
             border-bottom: none;
             padding-bottom: 0;
         }
         
+        /* Badges */
         .badge { 
             background: #f1f1ef; 
             color: #37352f; 
-            padding: 2px 8px; 
-            border-radius: 4px; 
-            font-size: 0.7em; 
-            font-weight: 500; 
+            padding: 4px 10px; 
+            border-radius: 6px; 
+            font-size: 0.75em; 
+            font-weight: 600; 
             border: 1px solid #ededeb;
+            display: inline-block;
         }
+        .badge.blue { background: #e8f3fb; color: #0a85d1; border-color: #d1e8f7;}
+        .badge.green { background: #edf3ec; color: #448361; border-color: #d3e4d1;}
+        .badge.gold { background: #fbf3db; color: #d9730d; border-color: #f3e4b8;}
         
         .muted-text { color: #787774; }
+        .callout {
+            background: #f7f6f3;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #0a85d1;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -188,10 +211,11 @@
 
         <!-- Title Slide -->
         <section class="center-text">
-            <h1>Keycloak as Enterprise IAM</h1>
-            <h3 class="muted-text" style="font-weight: 400;">A Technical Demo for Engineering & Product Teams</h3>
-            <br>
-            <p class="muted-text" style="text-align: center; font-size: 0.8em;">Use arrow keys to navigate</p>
+            <h1>FinSecure Bank</h1>
+            <h2 style="text-align: center; border: none; font-size: 1.8em; margin-bottom: 10px;">Keycloak IAM Demo</h2>
+            <h3 class="muted-text" style="font-weight: 400;">Convincing Your Teams to Adopt Keycloak as Enterprise IAM</h3>
+            <br><br>
+            <p class="muted-text" style="font-size: 0.85em;">Use arrow keys to navigate</p>
         </section>
 
         <!-- Slide 1 -->
@@ -200,8 +224,8 @@
             <blockquote>"Every team builds auth differently. Every app has its own users, sessions, and security gaps."</blockquote>
             <div class="grid-2">
                 <div>
-                    <h3 style="font-size: 1.2em; color: #eb5757;">Pain Points Without Central IAM</h3>
-                    <ul style="font-size: 0.85em;">
+                    <h3 style="color: #eb5757;">Pain Points Without Central IAM</h3>
+                    <ul>
                         <li>Duplicate login systems across 10+ internal apps</li>
                         <li>No Single Sign-On — users log in repeatedly</li>
                         <li>MFA bolted on per-app, inconsistently</li>
@@ -211,474 +235,512 @@
                     </ul>
                 </div>
                 <div>
-                    <h3 style="font-size: 1.2em; color: #0f7b6c;">The Solution: Keycloak</h3>
-                    <p style="font-size: 0.85em;">A battle-tested, open-source IAM platform used by enterprises worldwide. One platform. All auth concerns solved.</p>
-                    <ul style="font-size: 0.8em; margin-top: 15px;">
-                        <li><strong>Trust:</strong> Used by Red Hat, Bosch, Airbus</li>
-                        <li><strong>Modern:</strong> CNCF-listed, actively maintained</li>
-                        <li><strong>Protocols:</strong> OpenID Connect, OAuth 2.0, SAML 2.0</li>
-                        <li><strong>Extensible:</strong> Fully customizable via Java SPI</li>
-                    </ul>
+                    <h3 style="color: #0f7b6c;">The Answer</h3>
+                    <div class="callout" style="border-left-color: #0f7b6c;">
+                        <p style="margin: 0; font-size: 1.1em; font-weight: 600;">Keycloak — Open Source, Enterprise-Grade IAM</p>
+                        <p style="margin-top: 10px;">A unified identity platform that solves all standard authentication concerns out of the box, while remaining fully extensible for custom business logic.</p>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Slide 2 -->
         <section>
-            <h2>Core Concept: Realm</h2>
-            <blockquote>A <strong>Realm</strong> is an isolated security domain. Think of it as a tenant.</blockquote>
-            <div class="grid-2">
-                <div>
-                    <h3 style="font-size: 1.2em;">What it gives you</h3>
-                    <ul>
-                        <li>Separate user stores, clients, roles, and policies per realm</li>
-                        <li><code>master</code> realm for admin configuration</li>
-                        <li>Create dedicated realms per product/environment</li>
-                        <li><em>Example:</em> <code>partnerone-prod</code>, <code>partnerone-dev</code></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 style="font-size: 1.2em;">Why it matters</h3>
-                    <ul>
-                        <li><strong>Zero cross-contamination</strong> between environments</li>
-                        <li>Each realm has its own token signing keys, session policies, and UI branding</li>
-                        <li>Multi-tenancy out of the box — no custom code needed</li>
-                    </ul>
-                </div>
+            <h2>What We Built</h2>
+            <p style="font-weight: 600; font-size: 1.1em; margin-bottom: 20px;">FinSecure Bank Agent Network — A Production-Ready Keycloak 26 Demo</p>
+            
+            <table>
+                <thead>
+                    <tr><th>Layer</th><th>What's Implemented</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Identity Provider</strong></td><td>Keycloak 26 + PostgreSQL 16</td></tr>
+                    <tr><td><strong>Auth Protocols</strong></td><td>OAuth 2.0, OpenID Connect, PKCE</td></tr>
+                    <tr><td><strong>Custom SPIs</strong></td><td>7 Java extensions (auth, mappers, APIs, events)</td></tr>
+                    <tr><td><strong>Web Applications</strong></td><td>4 interactive portals</td></tr>
+                    <tr><td><strong>Demo Users</strong></td><td>13 profiles across all roles</td></tr>
+                    <tr><td><strong>Infrastructure</strong></td><td>Docker Compose, one-command setup</td></tr>
+                </tbody>
+            </table>
+
+            <div class="callout" style="border-left-color: #d9730d; background: #fbf3db;">
+                <p style="margin: 0;"><strong>Use Case:</strong> Field agents acquire bank customers, earn tier-based commissions (1%–5%), and progress through <span class="badge">STANDARD</span> → <span class="badge">SILVER</span> → <span class="badge gold">GOLD</span> → <span class="badge">PLATINUM</span> tiers — all driven completely by the identity layer.</p>
             </div>
         </section>
 
-        <!-- Slide 3 (Architecture Tree - Now Fixed!) -->
+        <!-- Slide 3 -->
         <section>
             <h2>Architecture Overview</h2>
-            <div>
-<pre><code class="language-plaintext">Mobile App
-    │
-    ▼
-Keycloak (Realm: partnerone)
-    │
-    ├── Direct Grant Flow
-    │       └── MpinAuthenticator (custom SPI)
-    │               └── PostgreSQL: user_mpin (lockout tracking)
-    │
-    ├── REST APIs (RealmResourceProvider SPI)
-    │       ├── /registration/*     ─── 4-step onboarding
-    │       ├── /forgot-mpin/*      ─── account recovery
-    │       └── /email-update/*     ─── authenticated email change
-    │
-    ├── Credential Store
-    │       ├── MPIN (password credential)
-    │       └── Security Questions (custom credential type)
-    │
-    ├── Password Policy
-    │       └── MpinPolicyProvider (4-digit, no repeat, no sequence)
-    │
-    ├── Event Listener
-    │       └── KafkaEventListenerProvider
-    │               └── Kafka / Azure Event Hubs
-    │
-    └── Supporting Services
-            ├── Redis (OTP + user existence cache)
-            └── PostgreSQL (sessions, mappings, audit log)</code></pre>
+            <div class="scroll-container">
+<pre><code class="language-plaintext">┌──────────────────────────────────────────────────────────┐
+│  Browser (SSO Session Cookies)                           │
+│                                                          │
+│  Agent Portal   Customer Portal   SSO Demo   Branch Mgmt │
+└────────────────────────┬─────────────────────────────────┘
+                         │  OAuth 2.0 / OIDC
+              ┌──────────▼──────────┐
+              │    Keycloak 26      │
+              │    FinTechRealm     │
+              │                     │
+              │  ┌───────────────┐  │
+              │  │  Custom SPIs  │  │
+              │  │  (7 modules)  │  │
+              │  └───────────────┘  │
+              └──────────┬──────────┘
+                         │
+              ┌──────────▼──────────┐
+              │   PostgreSQL 16     │
+              └─────────────────────┘</code></pre>
+            
+                <h3 style="margin-top: 30px;">Clients Registered:</h3>
+                <ul style="font-size: 0.9em;">
+                    <li><code>agent-portal</code> — Public, Direct Grant + Browser Flow</li>
+                    <li><code>customer-mobile-app</code> — Public, Browser Flow + SSO</li>
+                    <li><code>atm-legacy-system</code> — Confidential, Direct Grant only</li>
+                    <li><code>branch-management</code> — Confidential, Service Account</li>
+                </ul>
             </div>
-            <p style="font-size: 0.7em; margin-top: 15px;" class="muted-text"><strong>Clients Registered:</strong> <code>mobile-app</code> (Public), <code>admin-service</code> (Confidential), <code>bearer-only-service</code> (Token validation)</p>
         </section>
 
         <!-- Slide 4 -->
         <section>
-            <h2>Clients & Application Integration</h2>
-            <blockquote>A <strong>Client</strong> is any application that delegates authentication to Keycloak.</blockquote>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Use Case</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>public</code></td>
-                        <td>Mobile apps, SPAs (no client secret embedded)</td>
-                    </tr>
-                    <tr>
-                        <td><code>confidential</code></td>
-                        <td>Backend services, APIs (authenticates with client secret)</td>
-                    </tr>
-                    <tr>
-                        <td><code>bearer-only</code></td>
-                        <td>Microservices that only validate tokens, never initiate login</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h2>Feature 1: Two Authentication Flows</h2>
+            <div class="grid-2">
+                <div class="feature-card">
+                    <h3 class="badge blue">Direct Grant Flow (Legacy / ATM)</h3>
+<pre><code class="language-http" style="padding: 15px;">Client → POST /token
+  username=agent.platinum
+  password=agent123
+  banking_pin=2468
+  grant_type=password
 
-            <h3 style="font-size: 1.1em; margin-top: 20px;">Supported Flows Per Client:</h3>
-            <ul style="font-size: 0.85em;">
-                <li><strong>Authorization Code + PKCE:</strong> Secure flow for mobile/web browsers</li>
-                <li><strong>Client Credentials:</strong> Machine-to-machine / service-to-service</li>
-                <li><strong>Direct Grant:</strong> Username + password → token (Used in our MPIN flow)</li>
-                <li><strong>Device Authorization:</strong> For IoT and Smart TVs</li>
-            </ul>
+Keycloak → access_token (JWT)</code></pre>
+                    <ul style="font-size: 0.85em; margin-top: 15px;">
+                        <li>Single HTTP call, no browser required</li>
+                        <li>Custom PIN authenticator validates 4-digit PIN</li>
+                        <li>Used for ATM terminals, POS systems</li>
+                        <li>No SSO session created (API-only token)</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3 class="badge green">Browser Flow (Web Apps / SSO)</h3>
+<pre><code class="language-http" style="padding: 15px;">Client → GET /auth?client_id=agent...
+Browser → Keycloak Login Page
+User → Enters credentials
+Keycloak → Redirect with auth_code
+Client → POST /token (+ PKCE)
+Keycloak → token + SSO cookies</code></pre>
+                    <ul style="font-size: 0.85em; margin-top: 15px;">
+                        <li>Full PKCE protection (SHA-256 challenge)</li>
+                        <li>SSO session cookies set in browser</li>
+                        <li>MFA integrates seamlessly</li>
+                        <li>Credentials never exposed to the client app</li>
+                    </ul>
+                </div>
+            </div>
         </section>
 
         <!-- Slide 5 -->
         <section>
-            <h2>Protocol & Audience Mappers</h2>
-            <blockquote><strong>Protocol Mappers</strong> control what data gets baked into the JWT token.</blockquote>
+            <h2>Feature 2: Custom PIN Authenticator (SPI)</h2>
+            <p><strong>File:</strong> <code>src/main/java/com/finsecure/auth/FinTechPinAuthenticator.java</code></p>
             
             <div class="grid-2">
                 <div>
-                    <h3 style="font-size: 1.1em;">Out-of-the-box Mappers</h3>
-                    <ul style="font-size: 0.85em;">
-                        <li>User attribute → token claim</li>
-                        <li>Role → claim</li>
-                        <li>Group membership → claim</li>
-                        <li>Hardcoded claim values</li>
+                    <h3>What it does:</h3>
+                    <ul>
+                        <li>Plugs into Keycloak's flow as a custom <code>Authenticator</code> SPI</li>
+                        <li>Reads <code>banking_pin</code> from the HTTP request form parameters</li>
+                        <li>Validates against user's <code>banking_pin</code> attribute</li>
+                        <li>Sets session notes (<code>pin_validated</code>) on success</li>
+                        <li>Returns structured JSON error on failure</li>
                     </ul>
+                    <p class="muted-text" style="font-size: 0.85em; margin-top: 20px;"><strong>Why this matters:</strong> Legacy banking systems (ATMs, POS) can integrate with modern IAM without replacing their auth model.</p>
                 </div>
                 <div>
-                    <h3 style="font-size: 1.1em;">Audience Mapper</h3>
-                    <ul style="font-size: 0.85em;">
-                        <li>Adds <code>aud</code> claim so downstream services can verify intent</li>
-                        <li>Prevents token reuse across different services</li>
-                        <li><em>Example:</em> Token for <code>mobile-app</code> cannot be accepted by <code>admin-service</code></li>
-                    </ul>
+                    <h3>Live Demo:</h3>
+<pre><code class="language-bash"># Success
+curl -X POST http://localhost:8082/realms/FinTechRealm/protocol/openid-connect/token \
+  -d "username=agent.platinum" \
+  -d "password=agent123" \
+  -d "banking_pin=2468" \
+  -d "grant_type=password" \
+  -d "client_id=agent-portal"
+
+# Failure — wrong PIN
+curl -X POST ... -d "banking_pin=9999"
+# → {"error": "Invalid banking PIN"}</code></pre>
                 </div>
-            </div>
-            <div style="background: #f7f6f3; padding: 15px 20px; border-radius: 4px; margin-top: 20px; border-left: 3px solid #0a85d1;">
-                <p style="margin: 0; font-size: 0.85em;"><strong>Our Project Uses This For:</strong> Embedding <code>custom_user_id</code>, <code>mobile_number</code>, <code>device_id</code>, and <code>date_of_birth</code> into the JWT claims for frictionless downstream service consumption.</p>
             </div>
         </section>
 
         <!-- Slide 6 -->
         <section>
-            <h2>Feature: Two Authentication Flows</h2>
-            <div class="grid-2">
-                <div>
-                    <h3 style="font-size: 1.1em;">1. Direct Grant Flow (Mobile/API)</h3>
-<pre><code class="language-http">Client → POST /token
-  username=user@example.com
-  mpin=1234
-  grant_type=password
-  client_id=mobile-app
-
-Keycloak → access_token (JWT)</code></pre>
-                    <ul style="font-size: 0.8em;">
-                        <li>Single HTTP call, no browser</li>
-                        <li>Custom MPIN authenticator validates 4-digit PIN</li>
-                        <li>Tracks failed attempts in DB, auto-locks</li>
-                        <li>No SSO session created (API-only)</li>
-                    </ul>
+            <h2>Feature 3: Custom Token Claims (Protocol Mappers)</h2>
+            <p style="margin-bottom: 20px;">Three custom OIDC Protocol Mappers inject business context directly into JWT tokens. <strong>No downstream DB calls needed.</strong></p>
+            
+            <div class="grid-3 scroll-container">
+                <div class="feature-card">
+                    <h3 style="font-size: 1em;">1. AgentTierMapper</h3>
+                    <p class="muted-text" style="font-size: 0.8em; margin-top:-10px;">Reads <code>customers_acquired</code> → calc tier.</p>
+<pre><code class="language-json" style="padding: 10px; font-size: 0.75em;">{
+  "agent_tier": "PLATINUM",
+  "customers_acquired": 250,
+  "agent_incentives": {
+    "commission_rate_pct": 5.0,
+    "monthly_bonus": 2000,
+    "next_tier": "MAX_TIER"
+  }
+}</code></pre>
                 </div>
-                <div>
-                    <h3 style="font-size: 1.1em;">2. Browser Flow (Web/SSO)</h3>
-<pre><code class="language-http">Client → GET /auth?client_id=...
-Browser → Keycloak Login Page
-User → Enters credentials
-Keycloak → Redirect with auth_code
-Client → POST /token (code + PKCE)
-Keycloak → token + SSO cookies</code></pre>
-                    <ul style="font-size: 0.8em;">
-                        <li>Full PKCE protection (SHA-256)</li>
-                        <li>SSO session cookies set</li>
-                        <li>Credentials never exposed to app</li>
-                    </ul>
+                
+                <div class="feature-card">
+                    <h3 style="font-size: 1em;">2. AccountTierMapper</h3>
+                    <p class="muted-text" style="font-size: 0.8em; margin-top:-10px;">Reads <code>account_balance</code> → calc tier.</p>
+<pre><code class="language-json" style="padding: 10px; font-size: 0.75em;">{
+  "account_tier": "PLATINUM",
+  "account_tier_metadata": {
+    "benefits":[
+      "Priority support", 
+      "Zero fees"
+    ],
+    "calculated_at": 1718000000000
+  }
+}</code></pre>
+                </div>
+
+                <div class="feature-card">
+                    <h3 style="font-size: 1em;">3. TransactionRiskScoreMapper</h3>
+                    <p class="muted-text" style="font-size: 0.8em; margin-top:-10px;">Multi-factor risk scoring.</p>
+<pre><code class="language-json" style="padding: 10px; font-size: 0.75em;">{
+  "transaction_risk_score": 15,
+  "risk_level": "LOW",
+  "factors": [
+    "login_new_ip (+15)"
+  ]
+}</code></pre>
                 </div>
             </div>
-            <p style="font-size: 0.8em; margin-top: 20px; color: #787774;"><strong>Our "MPIN with Lockout" Flow:</strong> Replaces standard password auth. Validates MPIN, locks after <code>MPIN_MAX_ATTEMPTS</code> (3) for <code>MPIN_LOCKOUT_MINUTES</code> (15m).</p>
         </section>
 
         <!-- Slide 7 -->
         <section>
-            <h2>Feature: Custom SPI Interfaces</h2>
-            <blockquote>Keycloak's <strong>SPI framework</strong> lets you plug in custom Java logic at every layer.</blockquote>
+            <h2>Feature 4: Custom REST APIs (Realm Resource SPIs)</h2>
+            <p>Two custom REST endpoints registered directly inside Keycloak's realm URL space.</p>
+            
             <div class="grid-2 scroll-container">
-                <div class="feature-card">
-                    <h3>1. MpinAuthenticator</h3>
-                    <ul style="font-size: 0.85em;">
-                        <li>Plugs into Direct Grant flow</li>
-                        <li>Validates 4-digit MPIN</li>
-                        <li>Tracks fails in <code>user_mpin</code> PostgreSQL table</li>
-                        <li>Auto-locks & auto-unlocks based on env vars</li>
-                    </ul>
+                <div>
+                    <h3>Agent Network API</h3>
+                    <p class="muted-text" style="font-size: 0.8em;"><code>src/main/java/com/finsecure/rest/AgentNetworkResource.java</code></p>
+                    <table>
+                        <thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/agent-network/tier</code></td><td>GET</td><td>Agent's current tier + incentives</td></tr>
+                            <tr><td><code>/agent-network/incentives</code></td><td>GET</td><td>Full tier breakdown table</td></tr>
+                            <tr><td><code>/agent-network/record-acquisition</code></td><td>POST</td><td>Increment count, auto-promote tier</td></tr>
+                        </tbody>
+                    </table>
+                    <p style="font-size: 0.8em;"><em>Role check enforced on write ops (<code>agent</code>, <code>senior_agent</code>).</em></p>
                 </div>
-                <div class="feature-card">
-                    <h3>2. Security Questions Credential</h3>
-                    <ul style="font-size: 0.85em;">
-                        <li>New credential type: <code>security-questions</code></li>
-                        <li>Stores 3 Q&A pairs as JSON securely</li>
-                        <li>Used as identity verification factor in Forgot MPIN flow</li>
-                    </ul>
-                </div>
-                <div class="feature-card">
-                    <h3>3. MpinPolicyProvider</h3>
-                    <ul style="font-size: 0.85em;">
-                        <li>Enforces PIN rules at the identity layer</li>
-                        <li>Rejects: non-4-digit, letters, repeated (<code>1111</code>), sequential (<code>1234</code>)</li>
-                        <li>Works across all flows natively</li>
-                    </ul>
-                </div>
-                <div class="feature-card">
-                    <h3>4. KafkaEventListenerProvider</h3>
-                    <ul style="font-size: 0.85em;">
-                        <li>Hooks into <code>REGISTER</code> & <code>UPDATE_PASSWORD</code></li>
-                        <li>Publishes structured onboarding payloads to Kafka/Azure</li>
-                        <li>Includes custom metadata, questions, and MPIN hash</li>
-                    </ul>
+                
+                <div>
+                    <h3>Account Info API</h3>
+                    <p class="muted-text" style="font-size: 0.8em;"><code>src/main/java/com/finsecure/rest/AccountInfoResource.java</code></p>
+                    <table>
+                        <thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/account-info/me</code></td><td>GET</td><td>Full account profile + tier</td></tr>
+                            <tr><td><code>/account-info/tier</code></td><td>GET</td><td>Tier + amount to next tier</td></tr>
+                            <tr><td><code>/account-info/risk-score</code></td><td>GET</td><td>Security score (MFA, KYC)</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
 
         <!-- Slide 8 -->
         <section>
-            <h2>Feature: Custom REST APIs</h2>
-            <p class="muted-text" style="font-size: 0.9em; margin-top: -10px;">Extend Keycloak with custom endpoints under <code>/realms/{realm}/</code></p>
+            <h2>Feature 5: Fraud Detection Event Listener (SPI)</h2>
+            <p><strong>File:</strong> <code>src/main/java/com/finsecure/event/FraudDetectionEventListener.java</code></p>
+            <p>Keycloak fires events on every auth action. This SPI intercepts them all to detect anomalies.</p>
             
-            <div class="scroll-container">
-                <h3 style="font-size: 1.1em; margin-top: 10px;">Registration API <code>/registration/</code></h3>
-                <table>
-                    <thead><tr><th>Step</th><th>Endpoint</th><th>What it does</th></tr></thead>
-                    <tbody>
-                        <tr><td>1</td><td><code>/step1-personal-details</code></td><td>Validates name/mobile/PAN, device limits, sends OTP</td></tr>
-                        <tr><td>2</td><td><code>/step2-verify-otp</code></td><td>Verifies OTP from Redis, issues session token</td></tr>
-                        <tr><td>3</td><td><code>/step3-setup-mpin</code></td><td>Validates MPIN against policy, stores in session</td></tr>
-                        <tr><td>4</td><td><code>/step4-security-questions</code></td><td>Creates user, sets credentials, fires REGISTER event</td></tr>
-                    </tbody>
-                </table>
-                <p style="font-size: 0.8em;" class="muted-text"><em>Rules enforced:</em> PAN ↔ Mobile 1:1, Max 3 users/device, Age 18+ validation.</p>
-
-                <h3 style="font-size: 1.1em; margin-top: 30px;">Forgot MPIN API <code>/forgot-mpin/</code></h3>
-                <table>
-                    <thead><tr><th>Endpoint</th><th>What it does</th></tr></thead>
-                    <tbody>
-                        <tr><td><code>/init</code> & <code>/verify-sq</code></td><td>Looks up user, validates DOB + 3 security answers (3 attempts)</td></tr>
-                        <tr><td><code>/trigger-otp</code></td><td>Fallback: sends OTP when security questions fail</td></tr>
-                        <tr><td><code>/setup-mpin</code> & <code>/verify-otp</code></td><td>Sets new MPIN, sends OTP for confirmation, finalizes reset</td></tr>
-                    </tbody>
-                </table>
-
-                <h3 style="font-size: 1.1em; margin-top: 30px;">Email Update API <code>/email-update/</code></h3>
-                <table>
-                    <thead><tr><th>Endpoint</th><th>What it does</th></tr></thead>
-                    <tbody>
-                        <tr><td><code>/request-otp</code></td><td>Bearer token auth required, validates email, sends OTP</td></tr>
-                        <tr><td><code>/verify-and-update</code></td><td>Verifies OTP, updates Keycloak email, publishes event</td></tr>
-                    </tbody>
-                </table>
+            <div class="grid-2">
+                <div>
+                    <h3>Events Monitored:</h3>
+                    <table>
+                        <thead><tr><th>Event</th><th>Action Taken by SPI</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>LOGIN</code></td><td>Update <code>last_login</code>, <code>last_ip</code>, reset counters</td></tr>
+                            <tr><td><code>LOGIN_ERROR</code></td><td>Increment fails, auto-disable after 5</td></tr>
+                            <tr><td><code>LOGOUT</code></td><td>Record <code>last_logout_at</code></td></tr>
+                            <tr><td><code>UPDATE_PASSWORD</code></td><td>Detect IP change, flag for alert</td></tr>
+                            <tr><td><code>Admin Events</code></td><td>Alert on <code>ROLE</code> and <code>USER</code> changes</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <div class="callout" style="margin-top: 0;">
+                        <h3>Fraud Patterns Detected:</h3>
+                        <ul>
+                            <li>Login from new IP address</li>
+                            <li>Rapid re-login (&lt; 60 seconds between logins)</li>
+                            <li>Login between 2 AM – 5 AM</li>
+                            <li>Multiple failed attempts → auto account lock</li>
+                        </ul>
+                        <p style="margin-top: 20px; font-weight: 600;">Production Integration:</p>
+                        <p style="font-size: 0.9em;">Easily routable to SIEM, Elasticsearch, or SOC notifications via Kafka integration.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
         <!-- Slide 9 -->
         <section>
-            <h2>Feature: Events & Audit</h2>
-            <blockquote>Keycloak emits <strong>Events</strong> for every significant action. You can listen, store, and react.</blockquote>
+            <h2>Feature 6: Transaction Limit Auth Policy (SPI)</h2>
+            <p><strong>File:</strong> <code>src/main/java/com/finsecure/policy/TransactionLimitPolicy.java</code></p>
+            <p>A custom Keycloak Authorization Policy that enforces transaction limits at the IAM layer.</p>
             
             <div class="grid-2">
                 <div>
-                    <h3 style="font-size: 1.1em;">Built-in Events</h3>
-                    <ul style="font-size: 0.85em;">
-                        <li><code>LOGIN</code>, <code>LOGOUT</code>, <code>REGISTER</code></li>
-                        <li><code>UPDATE_PASSWORD</code>, <code>UPDATE_EMAIL</code></li>
-                        <li><code>LOGIN_ERROR</code>, <code>INVALID_SIGNATURE</code></li>
-                        <li><strong>Admin:</strong> user created, role assigned</li>
-                    </ul>
+                    <h3>Decision Logic:</h3>
+<pre><code class="language-plaintext">1. Extract transaction_amount from context
+2. Verify KYC status = "VERIFIED" → deny if not
+3. Calculate account tier from account_balance
+4. Compare amount against tier limit
+5. Grant or Deny access</code></pre>
+                    <p class="muted-text" style="font-size: 0.85em; margin-top: 20px;"><strong>Why this matters:</strong> Authorization policy lives in the central IAM layer — not scattered across microservices. One policy, enforced everywhere.</p>
                 </div>
                 <div>
-                    <h3 style="font-size: 1.1em;">Kafka Event Listener SPI</h3>
-                    <table style="margin: 0; font-size: 0.85em;">
-                        <tr>
-                            <td style="font-weight: 600;"><code>REGISTER</code></td>
-                            <td>Publishes <code>USER_ONBOARDING_COMPLETE</code> with full profile & hashes</td>
-                        </tr>
-                        <tr>
-                            <td style="font-weight: 600;"><code>UPDATE_PASSWORD</code></td>
-                            <td>Publishes <code>MPIN_RESET</code> for downstream sync</td>
-                        </tr>
+                    <h3>Tier Limits Enforced:</h3>
+                    <table>
+                        <thead>
+                            <tr><th>Tier</th><th>Daily Transaction Limit</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><span class="badge">STANDARD</span></td><td>$5,000</td></tr>
+                            <tr><td><span class="badge">SILVER</span></td><td>$25,000</td></tr>
+                            <tr><td><span class="badge gold">GOLD</span></td><td>$100,000</td></tr>
+                            <tr><td><span class="badge">PLATINUM</span></td><td>$500,000</td></tr>
+                        </tbody>
                     </table>
                 </div>
-            </div>
-            
-            <div style="margin-top: 30px;">
-                <h3 style="font-size: 1.1em;">Topics Routed:</h3>
-                <ul style="font-size: 0.9em; display: flex; gap: 15px; list-style: none; padding: 0;">
-                    <li><span class="badge">partnerone.user.events</span></li>
-                    <li><span class="badge">partnerone.mpin.events</span></li>
-                    <li><span class="badge">partnerone.otp.events</span></li>
-                    <li><span class="badge">partnerone.email.events</span></li>
-                </ul>
             </div>
         </section>
 
         <!-- Slide 10 -->
         <section>
-            <h2>Feature: Multi-Factor Auth (MFA)</h2>
+            <h2>Feature 7: Single Sign-On (SSO)</h2>
+            <p><strong>Demo Portal:</strong> <code>demo-apps/web/sso-demo.html</code></p>
+            
             <div class="grid-2">
                 <div>
-                    <h3 style="font-size: 1.2em;">Built-in MFA Options</h3>
-                    <ul style="font-size: 0.9em;">
-                        <li>TOTP (Google Authenticator)</li>
-                        <li>HOTP (Counter-based OTP)</li>
-                        <li>WebAuthn / FIDO2 (Passkeys, Hardware keys)</li>
-                    </ul>
+                    <h3>How it works:</h3>
+<pre><code class="language-plaintext" style="padding: 15px;">Step 1: User logs into Agent Portal
+        → Keycloak sets SSO cookie in browser
+
+Step 2: User opens Customer Portal
+        → Browser sends SSO cookie
+        → Keycloak recognizes session 
+        → Issues token (NO LOGIN PROMPT)
+
+Step 3: User logs out from any app
+        → Keycloak invalidates SSO session
+        → All apps lose access simultaneously</code></pre>
                 </div>
                 <div>
-                    <h3 style="font-size: 1.2em;">Our Custom MFA (SMS OTP)</h3>
-                    <ul style="font-size: 0.9em;">
-                        <li>Sent via <code>SMSService</code> to mobile</li>
-                        <li>Stored in Redis with TTL & device binding</li>
-                        <li>IP Rate Limiting (<code>OTP_MAX_IP_REQ</code>)</li>
-                        <li>Mobile Rate Limiting</li>
-                        <li>Soft lock (session) & Hard lock (24h)</li>
+                    <h3>Session Configuration:</h3>
+                    <ul>
+                        <li><strong>SSO Session Idle:</strong> 30 minutes</li>
+                        <li><strong>SSO Session Max:</strong> 10 hours</li>
+                        <li><strong>Access Token Lifetime:</strong> 5 minutes</li>
+                        <li><strong>Protocol:</strong> Auth Code + PKCE</li>
                     </ul>
+                    
+                    <div class="callout">
+                        <strong>Live Test:</strong>
+                        <ol style="margin-top: 10px; font-size: 0.9em;">
+                            <li>Login at <code>/agent-portal.html</code></li>
+                            <li>Open <code>/customer-app.html</code></li>
+                            <li>Click Login → <strong>Instant Access</strong></li>
+                        </ol>
+                    </div>
                 </div>
-            </div>
-            <div style="background: #f7f6f3; padding: 15px 20px; border-radius: 4px; margin-top: 20px;">
-                <p style="margin: 0; font-size: 0.85em;"><strong>Dev Tooling:</strong> Whitelisted numbers bypass OTP for automated testing via <code>mobile-whitelist.txt</code>.</p>
             </div>
         </section>
 
         <!-- Slide 11 -->
         <section>
-            <h2>Feature: Single Sign-On (SSO)</h2>
-            <blockquote><strong>SSO</strong> means authenticate once, access everything.</blockquote>
-            
-            <h3 style="font-size: 1.1em;">How Keycloak SSO works:</h3>
-            <ol style="font-size: 0.9em; margin-bottom: 30px;">
-                <li>User logs into App A → Keycloak creates a session cookie</li>
-                <li>User navigates to App B → Keycloak detects existing session</li>
-                <li>App B gets a token without the user re-entering credentials</li>
-            </ol>
+            <h2>Feature 8: Multi-Factor Authentication (MFA)</h2>
+            <p><strong>Protocol:</strong> TOTP (RFC 6238) — 6-digit, 30-second window</p>
 
-            <h3 style="font-size: 1.1em;">Session Management Features:</h3>
-            <ul style="font-size: 0.9em;">
-                <li>Configurable SSO session idle / max timeouts per realm</li>
-                <li>Admin can view and kill active sessions in real time</li>
-                <li><code>backchannel-logout</code> propagates logout to all connected applications</li>
-                <li><strong>Cross-realm SSO:</strong> Identity brokering allows enterprise multi-product SSO</li>
-            </ul>
+            <div class="grid-2">
+                <div>
+                    <h3>MFA + SSO Behavior:</h3>
+<pre><code class="language-plaintext" style="padding: 15px;">Login App 1 → Password → OTP ✓
+Open App 2  → Auto-auth (SSO) — NO OTP
+Open App 3  → Auto-auth (SSO) — NO OTP
+Logout      → All sessions terminated
+Next login  → OTP required again</code></pre>
+                    <p style="font-weight: 600; color: #0f7b6c;">MFA is validated once per SSO session — not per application.</p>
+                </div>
+                <div>
+                    <h3>Setup Flow:</h3>
+                    <ol>
+                        <li>Login to any portal</li>
+                        <li>Navigate to Keycloak Account Console</li>
+                        <li>Security → Two-factor Authentication → Scan QR</li>
+                    </ol>
+                    <p style="font-size: 0.85em; margin-top: 15px;" class="muted-text">Compatible with Google Authenticator, Authy, Microsoft Authenticator.</p>
+                    
+                    <h3 style="margin-top: 20px;">Brute Force Protection:</h3>
+                    <ul style="font-size: 0.85em;">
+                        <li>5 failed attempts → account temporarily locked</li>
+                        <li>Configurable lockout duration</li>
+                        <li>All failures logged by Fraud Detection listener</li>
+                    </ul>
+                </div>
+            </div>
         </section>
 
         <!-- Slide 12 -->
         <section>
-            <h2>Feature: RBAC & Groups</h2>
+            <h2>Feature 9: Custom Login Theme</h2>
+            <p><strong>Directory:</strong> <code>themes/finsecure-bank/login/</code></p>
             
             <div class="grid-2">
                 <div>
-                    <h3 style="font-size: 1.1em;">Role Types</h3>
                     <table>
-                        <tr><td><strong>Realm roles</strong></td><td>Available across all clients</td></tr>
-                        <tr><td><strong>Client roles</strong></td><td>Scoped to specific app</td></tr>
-                        <tr><td><strong>Composite roles</strong></td><td>Roles containing other roles</td></tr>
+                        <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>theme.properties</code></td><td>Extends base, loads custom CSS/JS</td></tr>
+                            <tr><td><code>login.ftl</code></td><td>Custom HTML template (bank branding)</td></tr>
+                            <tr><td><code>finsecure.css</code></td><td>Full brand redesign (cards, layout)</td></tr>
+                            <tr><td><code>finsecure.js</code></td><td>Password strength, biometric hooks</td></tr>
+                            <tr><td><code>messages_es.properties</code></td><td>Spanish localization</td></tr>
+                        </tbody>
                     </table>
                 </div>
                 <div>
-                    <h3 style="font-size: 1.1em;">Groups</h3>
-                    <ul style="font-size: 0.85em;">
-                        <li>Hierarchical (<code>org > dept > team</code>)</li>
-                        <li>Assign roles to groups; users inherit them instantly</li>
-                        <li>Group memberships map to JWT claims</li>
+                    <h3>Advanced Capabilities:</h3>
+                    <ul>
+                        <li>Conditional branding per <code>client_id</code> (agent vs customer styling)</li>
+                        <li>Dark mode auto-detection (<code>prefers-color-scheme</code>)</li>
+                        <li>Corporate SSO button (SAML federation)</li>
+                        <li>Loading spinner on form submit</li>
+                        <li>Biometric authentication hook (WebAuthn-ready)</li>
                     </ul>
+                    <p class="muted-text" style="font-size: 0.8em; margin-top: 20px;"><strong>Deployment:</strong> Docker volume mount → <code>docker cp themes/ finsecure-keycloak:/opt/keycloak/</code></p>
                 </div>
             </div>
-
-            <h3 style="font-size: 1.1em; margin-top: 20px;">Example Mapping:</h3>
-<pre><code class="language-plaintext">Group: /finance/analysts
-  → Realm Role: view-reports
-  → Client Role: reporting-app:read-only</code></pre>
-            <p style="font-size: 0.85em;" class="muted-text">Any user added to this group gets both roles in their token automatically.</p>
         </section>
 
-        <!-- Slide 13 & 14 (Combined for flow) -->
+        <!-- Slide 13 -->
         <section>
-            <section>
-                <h2>Feature: Custom Themes</h2>
-                <blockquote>Every screen Keycloak renders can be <strong>fully branded</strong>.</blockquote>
-                <ul style="font-size: 0.9em;">
-                    <li><strong>Themeable surfaces:</strong> Login, registration, error pages, emails, account portal.</li>
-                    <li><strong>Types:</strong> <code>login</code>, <code>account</code>, <code>admin</code>, <code>email</code>, <code>welcome</code>.</li>
-                    <li><strong>How:</strong> Drop a theme folder into <code>/opt/keycloak/themes/</code>.</li>
-                    <li><strong>Result:</strong> Users see your brand, not Keycloak's. Zero custom auth server code needed for UI.</li>
-                </ul>
-                <p class="muted-text" style="font-size: 0.8em; margin-top: 30px; text-align: center;">↓ Press Down Arrow for Identity Brokering ↓</p>
-            </section>
-            <section>
-                <h2>Identity Brokering & Federation</h2>
-                <blockquote>Keycloak can act as a <strong>broker</strong> — delegating auth to external IdPs.</blockquote>
-                <ul style="font-size: 0.9em;">
-                    <li><strong>Supported IdPs:</strong> Google, Apple, Microsoft, GitHub, any SAML/OIDC provider.</li>
-                    <li><strong>User Federation:</strong> Connect to LDAP / Active Directory. Migrate legacy users lazily on first login.</li>
-                    <li><strong>Our Project Context:</strong> Users are created natively via our Registration SPI. Extended attributes map to PostgreSQL and Redis for sub-millisecond lookups.</li>
-                </ul>
-            </section>
+            <h2>Feature 10: Role-Based Access Control (RBAC)</h2>
+            <p>9 distinct roles configured inside <code>FinTechRealm</code>.</p>
+            
+            <div class="scroll-container">
+                <table>
+                    <thead>
+                        <tr><th>Role</th><th>Assigned Users</th><th>Access Level</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>customer</code></td><td>alice.silver, bob.standard</td><td>Own account data only</td></tr>
+                        <tr><td><code>premium_customer</code></td><td>john.platinum, jane.gold</td><td>Premium features</td></tr>
+                        <tr><td><code>agent</code></td><td>agent.standard → platinum</td><td>Agent APIs, customer acquisition</td></tr>
+                        <tr><td><code>senior_agent</code></td><td>agent.gold, agent.platinum</td><td>Extended agent features</td></tr>
+                        <tr><td><code>agent_manager</code></td><td>manager.north</td><td>Team management, all agent data</td></tr>
+                        <tr><td><code>branch_manager</code></td><td>branch.manager</td><td>Full branch operations</td></tr>
+                        <tr><td><code>auditor</code></td><td>auditor.compliance</td><td>Read-only audit access</td></tr>
+                        <tr><td><code>support_staff</code></td><td>support.staff</td><td>Customer support tools</td></tr>
+                        <tr><td><code>admin</code></td><td>admin</td><td>Full realm administration</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout">
+                    <p style="margin: 0;"><strong>Role enforcement happens at two layers:</strong></p>
+                    <ol style="margin-top: 5px;">
+                        <li>Token claims — roles are embedded directly in the JWT.</li>
+                        <li>API layer — <code>AgentNetworkResource</code> strictly checks roles before permitting database write operations.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 14 -->
+        <section>
+            <h2>Demo Users Reference</h2>
+            <div class="scroll-container">
+                <table>
+                    <thead>
+                        <tr><th>User</th><th>Password</th><th>PIN</th><th>Role</th><th>Tier / Context</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>john.platinum</code></td><td>password123</td><td>1234</td><td>premium_customer</td><td>Account: <span class="badge">PLATINUM</span> ($250k)</td></tr>
+                        <tr><td><code>jane.gold</code></td><td>password123</td><td>5678</td><td>premium_customer</td><td>Account: <span class="badge gold">GOLD</span> ($75k)</td></tr>
+                        <tr><td><code>alice.silver</code></td><td>password123</td><td>9012</td><td>customer</td><td>Account: <span class="badge">SILVER</span> ($25k)</td></tr>
+                        <tr><td><code>bob.standard</code></td><td>password123</td><td>3456</td><td>customer</td><td>Account: <span class="badge">STANDARD</span> ($5k)</td></tr>
+                        <tr><td><code>agent.platinum</code></td><td>agent123</td><td>2468</td><td>senior_agent</td><td>Agent: <span class="badge">PLATINUM</span> (250 leads)</td></tr>
+                        <tr><td><code>agent.gold</code></td><td>agent123</td><td>1357</td><td>senior_agent</td><td>Agent: <span class="badge gold">GOLD</span> (85 leads)</td></tr>
+                        <tr><td><code>agent.silver</code></td><td>agent123</td><td>7531</td><td>agent</td><td>Agent: <span class="badge">SILVER</span> (28 leads)</td></tr>
+                        <tr><td><code>agent.standard</code></td><td>agent123</td><td>8642</td><td>agent</td><td>Agent: <span class="badge">STANDARD</span> (5 leads)</td></tr>
+                        <tr><td><code>manager.north</code></td><td>manager123</td><td>5555</td><td>agent_manager</td><td>—</td></tr>
+                        <tr><td><code>branch.manager</code></td><td>branch123</td><td>6666</td><td>branch_manager</td><td>—</td></tr>
+                        <tr><td><code>auditor.compliance</code></td><td>auditor123</td><td>7777</td><td>auditor</td><td>—</td></tr>
+                        <tr><td><code>unverified.user</code></td><td>unverified</td><td>—</td><td>customer</td><td>KYC: UNVERIFIED</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <!-- Slide 15 -->
         <section>
-            <h2>Infrastructure & Supporting Services</h2>
-            <div class="grid-2 scroll-container">
+            <h2>Live Demo Scenarios</h2>
+            <div class="grid-3 scroll-container">
                 <div class="feature-card">
-                    <h3>DatabaseConnectionPool</h3>
-                    <ul style="font-size: 0.85em;">
-                        <li>HikariCP PostgreSQL pool</li>
-                        <li>Singleton, thread-safe</li>
-                        <li>Used across all REST providers & SPIs</li>
-                    </ul>
+                    <h3 style="font-size: 1.1em;">A: PIN Auth</h3>
+<pre><code class="language-plaintext" style="padding: 10px; font-size: 0.75em;">1. Open Agent Portal (Direct Grant)
+2. Enter: agent.platinum / agent123 / 2468
+3. Click Authenticate
+4. View decoded JWT (PLATINUM tier)
+5. Enter wrong PIN → show rejection</code></pre>
                 </div>
                 <div class="feature-card">
-                    <h3>RedisOtpService</h3>
-                    <ul style="font-size: 0.85em;">
-                        <li>Jedis pool-based client</li>
-                        <li>Rate limiting (per-IP, per-mobile)</li>
-                        <li>Soft/Hard lockouts & Device Binding</li>
-                    </ul>
+                    <h3 style="font-size: 1.1em;">B: SSO in Action</h3>
+<pre><code class="language-plaintext" style="padding: 10px; font-size: 0.75em;">1. Open agent-portal.html → Login
+2. Open customer-app.html in same browser
+3. Click Login → instant access!
+4. Logout from customer portal
+5. Try agent portal → session terminated</code></pre>
                 </div>
                 <div class="feature-card">
-                    <h3>KafkaProducerService</h3>
-                    <ul style="font-size: 0.85em;">
-                        <li>High-performance async producer</li>
-                        <li>Jackson + Afterburner for JSON</li>
-                        <li>Dual-mode: Local Kafka or Azure Event Hubs</li>
-                    </ul>
+                    <h3 style="font-size: 1.1em;">C: Tier Progression</h3>
+<pre><code class="language-plaintext" style="padding: 10px; font-size: 0.75em;">1. Login as agent.standard (1% comm)
+2. Click "Record Acquisition" × 5
+3. Watch tier: STANDARD → SILVER
+4. View new 2% commission embedded
+   in live token updates.</code></pre>
                 </div>
                 <div class="feature-card">
-                    <h3>UserExistenceService</h3>
-                    <ul style="font-size: 0.85em;">
-                        <li>3-layer lookup: Redis → DB → Keycloak</li>
-                        <li>Sub-millisecond response</li>
-                        <li>Cache warming utilities included</li>
-                    </ul>
+                    <h3 style="font-size: 1.1em;">D: Token Claims</h3>
+<pre><code class="language-plaintext" style="padding: 10px; font-size: 0.75em;">1. Authenticate as john.platinum
+2. Inspect JWT:
+   - account_tier: PLATINUM
+   - transaction_risk: 5 (MINIMAL)
+3. Compare with bob.standard</code></pre>
+                </div>
+                <div class="feature-card">
+                    <h3 style="font-size: 1.1em;">E: Fraud Detection</h3>
+<pre><code class="language-plaintext" style="padding: 10px; font-size: 0.75em;">1. Enter wrong password 3× for john
+2. Open KC Admin → Events → LOGIN_ERROR
+3. View failed_login_attempts attribute
+4. 5th failure → auto-disabled</code></pre>
                 </div>
             </div>
         </section>
 
         <!-- Slide 16 -->
         <section>
-            <h2>Security Highlights</h2>
-            <div class="scroll-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Security Concern</th>
-                            <th>How We Handle It in Platform</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><strong>Brute force on MPIN</strong></td><td>3-attempt lockout, 15-min timeout, tracked in DB</td></tr>
-                        <tr><td><strong>OTP abuse</strong></td><td>Per-IP + mobile rate limiting, device binding, 24h hard lock</td></tr>
-                        <tr><td><strong>Token security</strong></td><td>Short-lived JWTs, audience mapper, total realm isolation</td></tr>
-                        <tr><td><strong>PAN/Mobile integrity</strong></td><td>DB-enforced 1:1 mapping checked at Registration step 1</td></tr>
-                        <tr><td><strong>Device limits</strong></td><td>Rule engine: max 3 users/device, max 3 devices/user w/ cooldown</td></tr>
-                        <tr><td><strong>Session security</strong></td><td>Time-limited session tokens, step-gated progression</td></tr>
-                        <tr><td><strong>Credential storage</strong></td><td>MPIN handled by Keycloak Credential Manager (SHA-256 hashed)</td></tr>
-                        <tr><td><strong>Event audit</strong></td><td>All auth events captured, published to Kafka for SIEM integration</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Slide 17 -->
-        <section>
-            <h2>Keycloak vs. Building Your Own</h2>
+            <h2>Why Keycloak vs. Building Your Own</h2>
             <table>
                 <thead>
                     <tr>
@@ -688,126 +750,124 @@ Keycloak → token + SSO cookies</code></pre>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>OAuth 2.0 / OIDC Compliance</td><td class="muted-text">Months of work</td><td>✅ Day 1</td></tr>
-                    <tr><td>SSO Across Apps</td><td class="muted-text">Complex session sharing</td><td>✅ Built-in</td></tr>
-                    <tr><td>MFA (TOTP, WebAuthn)</td><td class="muted-text">Custom implementation</td><td>✅ Built-in</td></tr>
-                    <tr><td>Token Management</td><td class="muted-text">Custom logic</td><td>✅ Built-in</td></tr>
-                    <tr><td>Admin UI</td><td class="muted-text">Build it from scratch</td><td>✅ Built-in</td></tr>
-                    <tr><td>Audit Events</td><td class="muted-text">Custom logging</td><td>✅ Built-in + extensible</td></tr>
-                    <tr><td>Custom Auth Flows</td><td class="muted-text">Your entire auth server</td><td>✅ Java SPI Plugin</td></tr>
-                    <tr><td>Social / Enterprise IdP</td><td class="muted-text">Per-provider integration</td><td>✅ Built-in brokers</td></tr>
-                    <tr><td>Scalability & HA</td><td class="muted-text">Design & build infra</td><td>✅ Cluster-ready</td></tr>
+                    <tr><td>OAuth 2.0 / OIDC</td><td class="muted-text">Months of dev work</td><td>✅ Built-in</td></tr>
+                    <tr><td>SSO Across Apps</td><td class="muted-text">Complex cookie/session mgmt</td><td>✅ Built-in</td></tr>
+                    <tr><td>MFA (TOTP, WebAuthn)</td><td class="muted-text">Separate library + UI required</td><td>✅ Built-in</td></tr>
+                    <tr><td>Brute Force Protection</td><td class="muted-text">Custom DB tracking logic</td><td>✅ Built-in</td></tr>
+                    <tr><td>Audit Logging</td><td class="muted-text">Custom event system</td><td>✅ Built-in</td></tr>
+                    <tr><td>Custom Auth Flows</td><td class="muted-text">N/A</td><td>✅ SPI extension points</td></tr>
+                    <tr><td>Custom Token Claims</td><td class="muted-text">Middleware layer code</td><td>✅ Protocol Mappers</td></tr>
+                    <tr><td>Custom APIs in Realm</td><td class="muted-text">Separate microservice</td><td>✅ RealmResourceProvider</td></tr>
+                    <tr><td>SAML & Social Login</td><td class="muted-text">Per-provider integration</td><td>✅ Built-in</td></tr>
                 </tbody>
             </table>
-            <p style="text-align: center; margin-top: 20px; font-weight: 600;">Keycloak handles the standard 80%. Our SPI handles the unique 20%.</p>
+            <p style="text-align: center; margin-top: 20px; font-weight: 700; font-size: 1.2em; color: #0f7b6c;">Time to production-ready IAM: Days, not months.</p>
+        </section>
+
+        <!-- Slide 17 -->
+        <section>
+            <h2>Custom SPI Summary</h2>
+            <p>All 7 custom extensions are packaged as a single JAR: <code>fintech-keycloak-spi.jar</code></p>
+            <div class="scroll-container">
+                <table>
+                    <thead>
+                        <tr><th>SPI Class</th><th>Extension Type</th><th>Purpose</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>FinTechPinAuthenticator</code></td><td><code>Authenticator</code></td><td>4-digit PIN validation in auth flow</td></tr>
+                        <tr><td><code>AgentTierMapper</code></td><td><code>ProtocolMapper</code></td><td>Inject agent tier + incentives into JWT</td></tr>
+                        <tr><td><code>AccountTierMapper</code></td><td><code>ProtocolMapper</code></td><td>Inject account tier + benefits into JWT</td></tr>
+                        <tr><td><code>TransactionRiskScoreMapper</code></td><td><code>ProtocolMapper</code></td><td>Inject fraud risk score into JWT</td></tr>
+                        <tr><td><code>AgentNetworkResource</code></td><td><code>RealmResourceProvider</code></td><td>REST API for agent operations</td></tr>
+                        <tr><td><code>AccountInfoResource</code></td><td><code>RealmResourceProvider</code></td><td>REST API for account data</td></tr>
+                        <tr><td><code>FraudDetectionEventListener</code></td><td><code>EventListenerProvider</code></td><td>Monitor all auth events, detect fraud</td></tr>
+                        <tr><td><code>TransactionLimitPolicy</code></td><td><code>PolicyProvider</code></td><td>Enforce tier-based transaction limits</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <!-- Slide 18 -->
         <section>
-            <h2>Deployment & Packaging</h2>
-            
+            <h2>Quick Start</h2>
             <div class="grid-2">
                 <div>
-<pre><code class="language-yaml"># docker-compose.yaml
-services:
-  keycloak: # KC 26.x
-  postgres: # User store + custom
-  redis:    # OTP + user cache
-  kafka:    # Event streaming</code></pre>
+<pre><code class="language-bash"># One command to run everything
+cd keycloak-demo
+chmod +x scripts/setup-complete-demo.sh
+./scripts/setup-complete-demo.sh</code></pre>
+                    <h3 style="margin-top: 20px;">What it does:</h3>
+                    <ol style="font-size: 0.85em;">
+                        <li>Builds the custom SPI JAR (<code>mvn package</code>)</li>
+                        <li>Builds the Docker image with JAR pre-loaded</li>
+                        <li>Starts KC 26 + PostgreSQL via Docker Compose</li>
+                        <li>Runs <code>setup-realm.py</code> (creates clients, users)</li>
+                        <li>Starts the static web server for demo portals</li>
+                    </ol>
                 </div>
                 <div>
-<pre><code class="language-bash"># Build & Deploy
-mvn clean package
-cp target/custom-spi.jar \
-   /opt/keycloak/providers/
-
-/opt/keycloak/bin/kc.sh build
-/opt/keycloak/bin/kc.sh start</code></pre>
+                    <h3>Access Points:</h3>
+                    <table>
+                        <thead><tr><th>URL</th><th>Purpose</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>:3000/portal.html</code></td><td>Demo hub — start here</td></tr>
+                            <tr><td><code>:3000/agent-portal.html</code></td><td>Agent portal (Direct/Browser)</td></tr>
+                            <tr><td><code>:3000/customer-app.html</code></td><td>Customer portal (SSO + MFA)</td></tr>
+                            <tr><td><code>:3000/sso-demo.html</code></td><td>SSO demonstration</td></tr>
+                            <tr><td><code>localhost:8082</code></td><td>Admin Console (admin/admin)</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-
-            <div style="margin-top: 20px;">
-                <h3 style="font-size: 1.1em;">SPI Auto-Registration (<code>META-INF/services/</code>)</h3>
-                <ul style="font-size: 0.85em;">
-                    <li><code>RealmResourceProviderFactory</code> (REST APIs)</li>
-                    <li><code>AuthenticatorFactory</code> (MPIN Flow)</li>
-                    <li><code>CredentialProviderFactory</code> (Security Questions)</li>
-                    <li><code>PasswordPolicyProviderFactory</code> (MPIN Rules)</li>
-                    <li><code>EventListenerProviderFactory</code> (Kafka Auditing)</li>
-                </ul>
             </div>
         </section>
 
         <!-- Slide 19 -->
         <section>
             <h2>Production Readiness Checklist</h2>
+            <p>This demo is structured to reflect actual production patterns:</p>
             <div class="grid-2">
                 <div>
-                    <ul style="font-size: 0.85em; list-style-type: none; padding: 0; line-height: 2;">
+                    <ul style="list-style-type: none; padding: 0; line-height: 2;">
                         <li>✅ PKCE on all browser flows</li>
                         <li>✅ Bearer token validation on APIs</li>
-                        <li>✅ RBAC enforced at token layer</li>
-                        <li>✅ Brute force protection (MPIN + OTP)</li>
-                        <li>✅ Audit trail via Kafka</li>
+                        <li>✅ Role-based access enforced at API layer</li>
+                        <li>✅ Fraud detection w/ auto account lockout</li>
+                        <li>✅ Audit trail on all auth events</li>
                     </ul>
                 </div>
                 <div>
-                    <ul style="font-size: 0.85em; list-style-type: none; padding: 0; line-height: 2;">
+                    <ul style="list-style-type: none; padding: 0; line-height: 2;">
                         <li>✅ Custom claims = zero downstream DB calls</li>
-                        <li>✅ Device binding on OTP</li>
+                        <li>✅ Configurable token lifetimes</li>
+                        <li>✅ Multi-language theme support (EN, ES)</li>
                         <li>✅ CORS configured per environment</li>
                         <li>✅ Containerized with Docker Compose</li>
                     </ul>
                 </div>
             </div>
             
-            <div style="background: #f7f6f3; padding: 15px 20px; border-radius: 4px; margin-top: 20px; border-left: 3px solid #37352f;">
-                <h3 style="font-size: 1em; margin-bottom: 5px;">For Production Environment:</h3>
-                <p style="font-size: 0.8em; margin: 0;">Configure TLS (HTTPS) • External SMTP • GeoIP lookup • SIEM integration (Splunk/ELK via Kafka) • HA Keycloak cluster (Infinispan)</p>
+            <div class="callout">
+                <h3 style="font-size: 1.1em; margin-bottom: 5px;">For Real Production Environments:</h3>
+                <p style="font-size: 0.85em; margin: 0;">Configure TLS (HTTPS) • External SMTP for email verification • GeoIP lookup in fraud listener • SIEM integration (Splunk, Elasticsearch) • HA Keycloak cluster (Infinispan cache)</p>
             </div>
         </section>
 
         <!-- Slide 20 -->
         <section>
-            <h2>Summary: What We Demonstrated</h2>
-            <div class="grid-3 scroll-container">
-                <div class="feature-card">
-                    <h3>Platform Features</h3>
-                    <ul style="font-size: 0.8em; padding-left: 20px;">
-                        <li>Realm isolation & Mappers</li>
-                        <li>Browser & Direct Grant flows</li>
-                        <li>Identity brokering & Scopes</li>
-                        <li>Custom themes</li>
-                        <li>RBAC, Groups & SSO</li>
-                    </ul>
+            <h2>Next Steps</h2>
+            <div class="grid-2">
+                <div>
+                    <h3>Immediate Actions:</h3>
+                    <ol style="font-size: 0.9em; line-height: 1.8;">
+                        <li><strong>Run the demo</strong> — <code>./setup-complete-demo.sh</code></li>
+                        <li><strong>Walk through</strong> all 5 live scenarios with the team</li>
+                        <li><strong>Inspect the JWT</strong> — see business context embedded</li>
+                        <li><strong>Review SPI code</strong> — understand the extension model</li>
+                    </ol>
                 </div>
-                <div class="feature-card">
-                    <h3>Custom SPIs Built</h3>
-                    <ul style="font-size: 0.8em; padding-left: 20px;">
-                        <li>MPIN Auth w/ Lockout</li>
-                        <li>Security Question Credentials</li>
-                        <li>MPIN Policy Enforcement</li>
-                        <li>Kafka Event Listener</li>
-                        <li>REST APIs (3 distinct suites)</li>
-                    </ul>
-                </div>
-                <div class="feature-card">
-                    <h3>Supporting Services</h3>
-                    <ul style="font-size: 0.8em; padding-left: 20px;">
-                        <li>Redis OTP Service</li>
-                        <li>Kafka Producer (Local/Azure)</li>
-                        <li>3-layer Existence Cache</li>
-                        <li>Device Limit Rule Engine</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- Slide 21 -->
-        <section>
-            <h2>Next Steps & Adoption Path</h2>
-            
-<pre><code class="language-plaintext">Week 1-2:  Deploy Keycloak in dev environment
+                <div>
+                    <h3>Adoption Path:</h3>
+<pre><code class="language-plaintext" style="font-size: 0.7em;">Week 1-2:  Deploy Keycloak in dev environment
            Migrate one internal app to OIDC
 
 Week 3-4:  Enable SSO across 2-3 apps
@@ -818,14 +878,12 @@ Month 2:   Write first custom SPI (token mapper)
 
 Month 3:   Full production rollout
            Decommission legacy auth systems</code></pre>
-
-            <h3 style="font-size: 1.1em; margin-top: 30px;">Resources:</h3>
-            <ul style="font-size: 0.9em;">
-                <li><a href="https://www.keycloak.org/docs/latest/" target="_blank">Keycloak Official Documentation</a></li>
-                <li><a href="https://www.keycloak.org/docs/latest/server_development/" target="_blank">SPI Server Development Guide</a></li>
-            </ul>
+                </div>
+            </div>
             
-            <p style="text-align: center; font-size: 0.7em; margin-top: 40px;" class="muted-text">Built on Keycloak 26.x · Java 17 · PostgreSQL · Redis · Kafka / Azure Event Hubs</p>
+            <p style="text-align: center; font-size: 0.8em; margin-top: 40px;" class="muted-text">
+                <strong>FinSecure Bank IAM Demo</strong> | Keycloak 26 | Version 1.0.0
+            </p>
         </section>
 
     </div>
@@ -836,17 +894,24 @@ Month 3:   Full production rollout
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
 
 <script>
-    // Initialize Presentation
+    // Initialize Presentation - Optimized for Full Viewport Spread
     Reveal.initialize({
         hash: true,           
         slideNumber: 'c/t',   
-        transition: 'none',   // Changed to 'none' for a more document-like Notion feel
+        transition: 'none',   
         controls: true,       
         progress: true,       
-        center: false,        // Keeps content pinned to the top like a doc
-        margin: 0.1,
-        width: 1080,          // Wider layout for better readability
-        height: 720
+        center: false,        
+        margin: 0.04,
+        
+        // Setting a very wide default resolution makes it responsive 
+        // to modern 16:9 and ultrawide monitors perfectly.
+        width: 1440,          
+        height: 900,
+        
+        // Allows the slides to scale smoothly without breaking layout
+        minScale: 0.2,
+        maxScale: 2.0
     });
 
     // Initialize Syntax Highlighting
